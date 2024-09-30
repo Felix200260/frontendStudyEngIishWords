@@ -5,13 +5,13 @@
         <el-menu :default-openeds="['1', '3']">
           <el-sub-menu index="1">
             <template #title>
-              <el-icon><message /></el-icon>Navigator One
+              <el-icon><message /></el-icon>Колоды
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1">Option 1</el-menu-item>
-              <el-menu-item index="2">Option 2</el-menu-item>
-              <el-menu-item index="3">Option 3</el-menu-item>
-              <el-menu-item index="4">Option 4</el-menu-item>
+              <el-menu-item index="1">Колода 1</el-menu-item>
+              <el-menu-item index="2">Колода 2</el-menu-item>
+              <el-menu-item index="3">Колода 3</el-menu-item>
+              <el-menu-item index="4">Колода 4</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
         </el-menu>
@@ -37,15 +37,7 @@
         </div>
       </el-header>
 
-      <el-main style="height: calc(100vh - 50px)">
-        <el-scrollbar>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="Date" width="140" />
-            <el-table-column prop="name" label="Name" width="120" />
-            <el-table-column prop="address" label="Address" />
-          </el-table>
-        </el-scrollbar>
-      </el-main>
+      <el-main style="height: calc(100vh - 50px)"> </el-main>
     </el-container>
   </el-container>
 </template>
@@ -65,23 +57,26 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-color: var(--el-color-primary-light-7);
+  background-color: #79bbff;
   color: var(--el-text-color-primary);
   display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 0 20px;
+  border-radius: 10px 10px 0 0; /* Закругляем верхний блок */
 }
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
+  background: #79bbff;
   height: 100vh;
+  border-radius: 10px 0 0 10px; /* Закругляем боковой блок */
 }
 .layout-container-demo .el-menu {
   border-right: none;
 }
 .layout-container-demo .el-main {
   padding: 0;
+  border-radius: 0 10px 10px 0; /* Закругляем главный контент */
 }
 .layout-container-demo .toolbar {
   display: inline-flex;

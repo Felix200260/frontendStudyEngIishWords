@@ -7,6 +7,7 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 
 import LoginView from './views/LoginView.vue'
+import RegistrationView from './views/RegistrationView.vue'
 import MainView from '@/views/MainView.vue'
 
 const router = createRouter({
@@ -14,6 +15,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'registration',
+      component: RegistrationView
+    },
+    {
+      path: '/login',
       name: 'login',
       component: LoginView
     },

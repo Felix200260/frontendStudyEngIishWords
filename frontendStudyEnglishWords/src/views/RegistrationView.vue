@@ -10,8 +10,12 @@
       class="main-form"
     >
       <div style="text-align: center">
-        <el-text>Вход</el-text>
+        <el-text>Регистрация</el-text>
       </div>
+      <!-- Поле для имени -->
+      <el-form-item style="margin-top: 20px" label="Имя">
+        <el-input v-model="dataForm.name" />
+      </el-form-item>
 
       <!-- Поле для email -->
       <el-form-item
@@ -36,6 +40,11 @@
       <!-- Поле для пароля -->
       <el-form-item label="Пароль" prop="pass">
         <el-input v-model="dataForm.pass" type="password" autocomplete="off" />
+      </el-form-item>
+
+      <!-- Поле для подтверждения пароля -->
+      <el-form-item label="Подтвердите пароль" prop="checkPass">
+        <el-input v-model="dataForm.checkPass" type="password" autocomplete="off" />
       </el-form-item>
 
       <!-- Кнопки отправки и сброса -->
@@ -98,8 +107,10 @@ const messageValidate2 = (rule: any, value: any, callback: any) => {
 
 const dataForm = reactive({
   // сохранение данных формы
+  name: '',
   email: '',
-  pass: ''
+  pass: '',
+  checkPass: ''
 })
 
 const rules = reactive<FormRules<typeof dataForm>>({
