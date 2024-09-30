@@ -110,14 +110,17 @@ const rules = reactive<FormRules<typeof dataForm>>({
 })
 </script>
 
-<style>
+<style scoped>
 .main-form {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 800px; /* Увеличил размер до 800px */
-  width: 100%; /* Гарантирует, что форма будет адаптироваться */
-  margin: 0 auto; /* Центрирование формы */
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 </style>
