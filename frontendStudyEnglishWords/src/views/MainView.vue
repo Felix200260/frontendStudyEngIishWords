@@ -34,6 +34,10 @@
             </template>
           </el-dropdown>
           <span>Tom</span>
+          <el-icon style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
+            <SwitchButton />
+          </el-icon>
+          <router-link to="/">Выйти</router-link>
         </div>
       </el-header>
 
@@ -44,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
+import { Menu as IconMenu, SwitchButton, Message, Setting } from '@element-plus/icons-vue'
 
 const item = {
   date: '2016-05-02',

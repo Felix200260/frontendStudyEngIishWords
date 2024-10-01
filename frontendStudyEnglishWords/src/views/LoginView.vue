@@ -43,10 +43,6 @@
         <el-button type="primary" @click="submitForm(ruleFormRef)"> Submit</el-button>
         <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
       </el-form-item>
-
-      <div style="text-align: center">
-        <router-link to="/login">Войти</router-link>
-      </div>
     </el-form>
   </div>
 </template>

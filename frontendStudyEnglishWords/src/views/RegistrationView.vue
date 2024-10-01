@@ -106,7 +106,6 @@ const messageValidate2 = (rule: any, value: any, callback: any) => {
 }
 
 const dataForm = reactive({
-  // сохранение данных формы
   name: '',
   email: '',
   pass: '',
