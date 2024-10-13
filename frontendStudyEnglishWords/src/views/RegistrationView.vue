@@ -49,7 +49,7 @@
 
       <!-- Кнопки отправки и сброса -->
       <el-form-item>
-        <el-button type="primary" @click="submitForm(ruleFormRef)"> Submit</el-button>
+        <el-button type="primary" @click="submitForm(ruleFormRef)"> Зарегистрироваться </el-button>
         <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
       </el-form-item>
 
@@ -63,14 +63,29 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import type { FormProps, FormInstance, FormRules } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router' //добавил для возможности по нажатию кнопки переходить по route
 
 const labelPositionAll = ref<FormProps['labelPosition']>('top')
+
+const router = useRouter() //добавил для возможности по нажатию кнопки переходить по route
+const userStore = useUserStore()
+userStore.loadUser()
 
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
       console.log('submit!')
+
+      // сохраняю в хранилищек
+      userStore.setUser({
+        name: dataForm.name,
+        email: dataForm.email,
+        pass: dataForm.pass
+      })
+      router.push({ name: 'main' })
+      // console.log('Pinia', userStore.name, userStore.email)
     } else {
       console.log('error submit!')
     }

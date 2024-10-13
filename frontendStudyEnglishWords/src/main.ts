@@ -3,12 +3,17 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
+import { createPinia } from 'pinia'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 
 import LoginView from './views/LoginView.vue'
 import RegistrationView from './views/RegistrationView.vue'
 import MainView from '@/views/MainView.vue'
+import { useUserStore } from '@/stores/user'
+
+const pinia = createPinia()
+const app = createApp(App)
 
 const router = createRouter({
   history: createWebHistory(),
@@ -31,7 +36,30 @@ const router = createRouter({
   ]
 })
 
-const app = createApp(App)
-app.use(router)
+//to.name === 'login' || to.name === 'registration') — проверяем, пытается ли пользователь перейти на страницы логина
+
+app.use(pinia)
 app.use(ElementPlus)
+app.use(router)
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  userStore.loadUser()
+  const isRegistered = localStorage.getItem('isRegistered') === 'true' // Проверка, регистрировался ли пользователь
+  const isLoggedIn = userStore.name && userStore.email // Проверка, авторизован ли пользователь
+
+  //если незарегистрирован
+  if (!isRegistered && to.name !== 'registration') {
+    next({ name: 'registration' })
+    //зарегистрирован, но вышел
+  } else if (isRegistered && !isLoggedIn && to.name !== 'login') {
+    next({ name: 'login' })
+    //если авторизован, то просто перенаправляем на главное меню
+  } else if (isLoggedIn && (to.name === 'login' || to.name === 'registration')) {
+    next({ name: 'main' })
+  } else {
+    next()
+  }
+})
+
 app.mount('#app')
