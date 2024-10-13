@@ -21,15 +21,15 @@
     <el-container>
       <el-header style="text-align: right; font-size: 12px; height: 50px">
         <div class="toolbar">
-          <el-dropdown>
+          <el-dropdown @command="action1">
             <el-icon style="margin-right: 8px; margin-top: 1px">
               <setting />
             </el-icon>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>View</el-dropdown-item>
-                <el-dropdown-item>Add</el-dropdown-item>
-                <el-dropdown-item>Delete</el-dropdown-item>
+                <el-dropdown-item command="action1">View</el-dropdown-item>
+                <el-dropdown-item command="action2">Add</el-dropdown-item>
+                <el-dropdown-item command="action3">Delete</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -49,6 +49,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Menu as IconMenu, SwitchButton, Message, Setting } from '@element-plus/icons-vue'
+
+const action1 = (command: string) => {
+  // Замените alert на нужное вам действие
+  alert(`Клик на элемент: ${command}`)
+}
 
 const item = {
   date: '2016-05-02',
