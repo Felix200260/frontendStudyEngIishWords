@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', {
       this.pass = data.pass
 
       localStorage.setItem('user', JSON.stringify({ name: this.name, email: this.email }))
-      console.log('User set:', this.name, this.email) // Отладка
+      console.log('User set:', this.name, this.email)
     },
     loadUser() {
       const savedUser = localStorage.getItem('user')
@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', {
         const { name, email } = JSON.parse(savedUser)
         this.name = name
         this.email = email
-        console.log('User loaded:', this.name, this.email) // Отладка
+        console.log('User loaded:', this.name, this.email)
       }
     },
 

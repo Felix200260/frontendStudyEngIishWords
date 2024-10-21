@@ -21,23 +21,36 @@
     <el-container>
       <el-header style="text-align: right; font-size: 12px; height: 50px">
         <div class="toolbar">
-          <el-dropdown @command="action1">
-            <el-icon style="margin-right: 8px; margin-top: 1px">
-              <setting />
+          <div class="DeckSearch">
+            <el-autocomplete
+              v-model="state"
+              :fetch-suggestions="querySearch"
+              popper-class="my-autocomplete"
+              placeholder="Найти колоду"
+              @select="handleSelect"
+            >
+              <template #suffix>
+                <el-icon class="el-input__icon" @click="handleIconClick">
+                  <edit />
+                </el-icon>
+              </template>
+              <template #default="{ item }">
+                <div class="value">{{ item.value }}</div>
+                <span class="link">{{ item.link }}</span>
+              </template>
+            </el-autocomplete>
+          </div>
+          <!--Добавить колоду-->
+          <div class="addDeck">
+            <el-button type="primary" :icon="Plus">Добавить колоду</el-button>
+          </div>
+          <!---->
+          <div class="outputFromSystem">
+            <el-icon class="" style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
+              <SwitchButton />
             </el-icon>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="action1">View</el-dropdown-item>
-                <el-dropdown-item command="action2">Add</el-dropdown-item>
-                <el-dropdown-item command="action3">Delete</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <span>Tom</span>
-          <el-icon style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
-            <SwitchButton />
-          </el-icon>
-          <router-link to="/">Выйти</router-link>
+            <router-link to="/">Выйти</router-link>
+          </div>
         </div>
       </el-header>
 
@@ -48,7 +61,52 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu as IconMenu, SwitchButton, Message, Setting } from '@element-plus/icons-vue'
+import { SwitchButton, Message, Setting } from '@element-plus/icons-vue'
+import { onMounted } from 'vue'
+import { Edit, Plus } from '@element-plus/icons-vue'
+
+//Поиск====================================================================================
+interface LinkItem {
+  value: string
+  link: string
+}
+
+const state = ref('')
+const links = ref<LinkItem[]>([])
+
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString ? links.value.filter(createFilter(queryString)) : links.value
+  // call callback function to return suggestion objects
+  cb(results)
+}
+const createFilter = (queryString: string) => {
+  return (item: LinkItem) => {
+    return item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+  }
+}
+const loadAll = () => {
+  return [
+    { value: 'vue', link: 'https://github.com/vuejs/vue' },
+    { value: 'element', link: 'https://github.com/ElemeFE/element' },
+    { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
+    { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
+    { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
+    { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
+    { value: 'babel', link: 'https://github.com/babel/babel' }
+  ]
+}
+const handleSelect = (item: LinkItem) => {
+  console.log(item)
+}
+
+const handleIconClick = (ev: Event) => {
+  console.log(ev)
+}
+
+onMounted(() => {
+  links.value = loadAll()
+})
+//Поиск====================================================================================
 
 const action1 = (command: string) => {
   // Замените alert на нужное вам действие
@@ -87,10 +145,13 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
   padding: 0;
   border-radius: 0 10px 10px 0; /* Закругляем главный контент */
 }
-.layout-container-demo .toolbar {
-  display: inline-flex;
+
+.toolbar {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+}
+
+.toolbar > div:nth-child(-n + 3) {
+  margin-right: 20px;
 }
 </style>

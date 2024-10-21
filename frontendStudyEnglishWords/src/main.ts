@@ -42,24 +42,23 @@ app.use(pinia)
 app.use(ElementPlus)
 app.use(router)
 
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  userStore.loadUser()
-  const isRegistered = localStorage.getItem('isRegistered') === 'true' // Проверка, регистрировался ли пользователь
-  const isLoggedIn = userStore.name && userStore.email // Проверка, авторизован ли пользователь
-
-  //если незарегистрирован
-  if (!isRegistered && to.name !== 'registration') {
-    next({ name: 'registration' })
-    //зарегистрирован, но вышел
-  } else if (isRegistered && !isLoggedIn && to.name !== 'login') {
-    next({ name: 'login' })
-    //если авторизован, то просто перенаправляем на главное меню
-  } else if (isLoggedIn && (to.name === 'login' || to.name === 'registration')) {
-    next({ name: 'main' })
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+// const userStore = useUserStore()
+// userStore.loadUser()
+// const isRegistered = localStorage.getItem('isRegistered') === 'true' // Проверка, регистрировался ли пользователь
+// const isLoggedIn = userStore.name && userStore.email // Проверка, авторизован ли пользователь
+//если незарегистрирован
+//   if (!isRegistered && to.name !== 'registration') {
+//     next({ name: 'registration' })
+//     //зарегистрирован, но вышел
+//   } else if (isRegistered && !isLoggedIn && to.name !== 'login') {
+//     next({ name: 'login' })
+//     //если авторизован, то просто перенаправляем на главное меню
+//   } else if (isLoggedIn && (to.name === 'login' || to.name === 'registration')) {
+//     next({ name: 'main' })
+//   } else {
+//     next()
+//   }
+// })
 
 app.mount('#app')
