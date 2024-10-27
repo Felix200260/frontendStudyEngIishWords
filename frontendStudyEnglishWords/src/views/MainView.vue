@@ -42,7 +42,9 @@
           </div>
           <!--Добавить колоду-->
           <div class="addDeck">
-            <el-button type="primary" :icon="Plus">Добавить колоду</el-button>
+            <el-button type="primary" :icon="Plus" @click="dialogFormVisible = true"
+              >Добавить колоду</el-button
+            >
           </div>
           <!---->
           <div class="outputFromSystem">
@@ -55,28 +57,53 @@
       </el-header>
 
       <el-main style="height: calc(100vh - 50px)">
-        <!-- Swiper -->
-        <div class="swiper mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">Slide 1</div>
-            <div class="swiper-slide">Slide 2</div>
-            <div class="swiper-slide">Slide 3</div>
-            <div class="swiper-slide">Slide 4</div>
-            <div class="swiper-slide">Slide 5</div>
-            <div class="swiper-slide">Slide 6</div>
-            <div class="swiper-slide">Slide 7</div>
-            <div class="swiper-slide">Slide 8</div>
-            <div class="swiper-slide">Slide 9</div>
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
+        <!--        &lt;!&ndash; Swiper &ndash;&gt;-->
+        <!--        <div class="swiper mySwiper">-->
+        <!--          <div class="swiper-wrapper">-->
+        <!--            <div class="swiper-slide">Slide 1</div>-->
+        <!--            <div class="swiper-slide">Slide 2</div>-->
+        <!--            <div class="swiper-slide">Slide 3</div>-->
+        <!--            <div class="swiper-slide">Slide 4</div>-->
+        <!--            <div class="swiper-slide">Slide 5</div>-->
+        <!--            <div class="swiper-slide">Slide 6</div>-->
+        <!--            <div class="swiper-slide">Slide 7</div>-->
+        <!--            <div class="swiper-slide">Slide 8</div>-->
+        <!--            <div class="swiper-slide">Slide 9</div>-->
+        <!--          </div>-->
+        <!--          <div class="swiper-pagination"></div>-->
+        <!--        </div>-->
+
+        <el-dialog v-model="dialogFormVisible" title="Добавить колоду" width="700">
+          <el-form :model="form">
+            <el-form-item label="Название колоды" :label-width="formLabelWidth">
+              <el-input v-model="form.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item :label-width="formLabelWidth">
+              <el-input
+                v-model="textarea"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                type="textarea"
+                placeholder="Please input"
+              />
+              <el-button style="margin-top: 20px" size="default" @click="openWindowImportCards"
+                >+ Импортировать</el-button
+              >
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">Cancel</el-button>
+              <el-button type="primary" @click="dialogFormVisible = false"> Confirm </el-button>
+            </div>
+          </template>
+        </el-dialog>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { SwitchButton, Message, Setting } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { Edit, Plus } from '@element-plus/icons-vue'
@@ -100,6 +127,45 @@ onMounted(() => {
     modules: [Navigation, Pagination]
   })
 })
+
+const dialogFormVisible = ref(false)
+// const formLabelWidth = '140px'
+
+const form = reactive({
+  name: '',
+  region: '',
+  date1: '',
+  date2: '',
+  delivery: false,
+  type: [],
+  resource: '',
+  desc: ''
+})
+
+const gridData = [
+  {
+    date: '2016-05-02',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District'
+  },
+  {
+    date: '2016-05-04',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District'
+  },
+  {
+    date: '2016-05-01',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District'
+  },
+  {
+    date: '2016-05-03',
+    name: 'John Smith',
+    address: 'No.1518,  Jinshajiang Road, Putuo District'
+  }
+]
+
+const textarea = ref('')
 
 //Поиск====================================================================================
 interface LinkItem {
@@ -160,8 +226,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-color: #79bbff;
-  color: var(--el-text-color-primary);
+  background-color: #2e3856;
+  color: white;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -170,7 +236,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 }
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background: #79bbff;
+  background: #0a092d;
   height: 100vh;
   border-radius: 10px 0 0 10px; /* Закругляем боковой блок */
 }
