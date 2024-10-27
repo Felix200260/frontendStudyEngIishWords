@@ -12,6 +12,7 @@ import RegistrationView from './views/RegistrationView.vue'
 import MainView from '@/views/MainView.vue'
 import { useUserStore } from '@/stores/user'
 import ImportCards from '@/views/ImportCards.vue'
+import './index.css'
 
 const pinia = createPinia()
 const app = createApp(App)
