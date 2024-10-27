@@ -65,6 +65,7 @@ import { reactive, ref } from 'vue'
 import type { FormProps, FormInstance, FormRules } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router' //добавил для возможности по нажатию кнопки переходить по route
+import { sendUserAutoDate } from '@/service/AuthorizationService'
 
 const labelPositionAll = ref<FormProps['labelPosition']>('top')
 
@@ -72,13 +73,13 @@ const router = useRouter() //добавил для возможности по �
 const userStore = useUserStore()
 userStore.loadUser()
 
-const submitForm = (formEl: FormInstance | undefined) => {
+const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  formEl.validate((valid) => {
+  formEl.validate(async (valid) => {
     if (valid) {
       console.log('submit!')
 
-      // сохраняю в хранилищек
+      // сохраняю в хранилище
       userStore.setUser({
         name: dataForm.name,
         email: dataForm.email,
@@ -86,6 +87,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
       })
       router.push({ name: 'main' })
       // console.log('Pinia', userStore.name, userStore.email)
+      try {
+        await sendUserAutoDate()
+        router.push({ name: 'main' })
+      } catch (error) {
+        console.error('Ошибка при отправке данных:', error)
+      }
     } else {
       console.log('error submit!')
     }

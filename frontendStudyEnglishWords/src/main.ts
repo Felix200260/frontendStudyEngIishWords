@@ -50,11 +50,11 @@ app.use(ElementPlus)
 app.use(router)
 
 // router.beforeEach((to, from, next) => {
-// const userStore = useUserStore()
-// userStore.loadUser()
-// const isRegistered = localStorage.getItem('isRegistered') === 'true' // Проверка, регистрировался ли пользователь
-// const isLoggedIn = userStore.name && userStore.email // Проверка, авторизован ли пользователь
-//если незарегистрирован
+//   const userStore = useUserStore()
+//   userStore.loadUser()
+//   const isRegistered = localStorage.getItem('isRegistered') === 'true' // Проверка, регистрировался ли пользователь
+//   const isLoggedIn = userStore.name && userStore.email // Проверка, авторизован ли пользователь
+//   // если незарегистрирован
 //   if (!isRegistered && to.name !== 'registration') {
 //     next({ name: 'registration' })
 //     //зарегистрирован, но вышел
