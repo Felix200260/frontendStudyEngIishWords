@@ -85,8 +85,8 @@
                 type="textarea"
                 placeholder="Please input"
               />
-              <el-button style="margin-top: 20px" size="default" @click="openWindowImportCards"
-                >+ Импортировать</el-button
+              <el-button style="margin-top: 20px" size="default" @click="openWindowImportCards">
+                <router-link to="/importCards">Импортировать</router-link></el-button
               >
             </el-form-item>
           </el-form>

@@ -11,6 +11,7 @@ import LoginView from './views/LoginView.vue'
 import RegistrationView from './views/RegistrationView.vue'
 import MainView from '@/views/MainView.vue'
 import { useUserStore } from '@/stores/user'
+import ImportCards from '@/views/ImportCards.vue'
 
 const pinia = createPinia()
 const app = createApp(App)
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/main',
       name: 'main',
       component: MainView
+    },
+    {
+      path: '/importCards',
+      name: 'importCards',
+      component: ImportCards
     }
   ]
 })
