@@ -2,8 +2,8 @@
   <el-container class="layout-container-demo" style="height: 100vh">
     <el-aside width="200px">
       <el-scrollbar>
-        <el-menu :default-openeds="['1', '3']">
-          <el-sub-menu index="1">
+        <el-menu>
+          <el-sub-menu>
             <template #title>
               <el-icon><message /></el-icon>Колоды
             </template>
@@ -226,26 +226,24 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-color: #2e3856;
+  background-color: #0a092d;
   color: white;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 0 20px;
-  border-radius: 10px 10px 0 0; /* Закругляем верхний блок */
 }
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
   background: #0a092d;
   height: 100vh;
-  border-radius: 10px 0 0 10px; /* Закругляем боковой блок */
 }
 .layout-container-demo .el-menu {
   border-right: none;
+  height: 50px;
 }
 .layout-container-demo .el-main {
   padding: 0;
-  border-radius: 0 10px 10px 0; /* Закругляем главный контент */
 }
 
 .toolbar {
