@@ -54,7 +54,23 @@
         </div>
       </el-header>
 
-      <el-main style="height: calc(100vh - 50px)"> </el-main>
+      <el-main style="height: calc(100vh - 50px)">
+        <!-- Swiper -->
+        <div class="swiper mySwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">Slide 1</div>
+            <div class="swiper-slide">Slide 2</div>
+            <div class="swiper-slide">Slide 3</div>
+            <div class="swiper-slide">Slide 4</div>
+            <div class="swiper-slide">Slide 5</div>
+            <div class="swiper-slide">Slide 6</div>
+            <div class="swiper-slide">Slide 7</div>
+            <div class="swiper-slide">Slide 8</div>
+            <div class="swiper-slide">Slide 9</div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -64,6 +80,26 @@ import { ref } from 'vue'
 import { SwitchButton, Message, Setting } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { Edit, Plus } from '@element-plus/icons-vue'
+import Swiper from 'swiper/bundle'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import { Navigation, Pagination } from 'swiper/modules'
+
+onMounted(() => {
+  new Swiper('.mySwiper', {
+    slidesPerView: 3,
+    grid: {
+      rows: 2
+    },
+    spaceBetween: 30,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    modules: [Navigation, Pagination]
+  })
+})
 
 //Поиск====================================================================================
 interface LinkItem {
@@ -153,5 +189,21 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 
 .toolbar > div:nth-child(-n + 3) {
   margin-right: 20px;
+}
+
+/* Стили для swiper */
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  background: #0041cf;
+  border-radius: 15%;
+  box-shadow: 10px 10px 10px #5b71a2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
