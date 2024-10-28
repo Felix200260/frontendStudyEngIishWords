@@ -2,8 +2,8 @@
   <el-container class="layout-container-demo" style="height: 100vh">
     <el-aside width="200px">
       <el-scrollbar>
-        <el-menu>
-          <el-sub-menu>
+        <!-- <el-menu> -->
+        <!-- <el-sub-menu>
             <template #title>
               <el-icon><message /></el-icon>Колоды
             </template>
@@ -13,8 +13,8 @@
               <el-menu-item index="3">Колода 3</el-menu-item>
               <el-menu-item index="4">Колода 4</el-menu-item>
             </el-menu-item-group>
-          </el-sub-menu>
-        </el-menu>
+          </el-sub-menu> -->
+        <!-- </el-menu> -->
       </el-scrollbar>
     </el-aside>
 
@@ -57,22 +57,100 @@
       </el-header>
 
       <el-main style="height: calc(100vh - 50px)">
-        <!--        &lt;!&ndash; Swiper &ndash;&gt;-->
-        <!--        <div class="swiper mySwiper">-->
-        <!--          <div class="swiper-wrapper">-->
-        <!--            <div class="swiper-slide">Slide 1</div>-->
-        <!--            <div class="swiper-slide">Slide 2</div>-->
-        <!--            <div class="swiper-slide">Slide 3</div>-->
-        <!--            <div class="swiper-slide">Slide 4</div>-->
-        <!--            <div class="swiper-slide">Slide 5</div>-->
-        <!--            <div class="swiper-slide">Slide 6</div>-->
-        <!--            <div class="swiper-slide">Slide 7</div>-->
-        <!--            <div class="swiper-slide">Slide 8</div>-->
-        <!--            <div class="swiper-slide">Slide 9</div>-->
-        <!--          </div>-->
-        <!--          <div class="swiper-pagination"></div>-->
-        <!--        </div>-->
-
+        <el-row style="margin-top: 20px; margin-left: 20px" :gutter="20">
+          <!-- Кололнка 1 -->
+          <el-col :span="6"
+            ><div class="grid-content ep-bg-purple" />
+            <!-- Карта 1 -->
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card>
+            <!-- Карта 1 -->
+          </el-col>
+          <!-- Кололнка 1 -->
+          <!-- Кололнка 2 -->
+          <el-col :span="6"
+            ><div class="grid-content ep-bg-purple" />
+            <!-- Карта 2 -->
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card>
+            <!-- Карта 2 -->
+          </el-col>
+          <!-- Кололнка 2 -->
+          <el-col :span="6"
+            ><div class="grid-content ep-bg-purple" />
+            <!-- Карта 2 -->
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card>
+            <!-- Карта 2 -->
+            <!-- Кололнка 2 -->
+          </el-col>
+        </el-row>
+        <el-row style="margin-top: 20px; margin-left: 20px" :gutter="20">
+          <!-- Кололнка 3 -->
+          <el-col :span="6">
+            <div class="grid-content ep-bg-purple" />
+            <!-- Карта 3 -->
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card>
+            <!-- Карта 3 -->
+          </el-col>
+          <!-- Кололнка 3 -->
+          <el-col :span="6">
+            <div class="grid-content ep-bg-purple" />
+            <!-- Карта 4 -->
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card>
+            <!-- Карта 4 -->
+          </el-col>
+          <el-col :span="6"
+            ><div class="grid-content ep-bg-purple" />
+            <el-card style="max-width: 480px">
+              <template #header>
+                <div class="card-header">
+                  <span>Card name</span>
+                </div>
+              </template>
+              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
+              <template #footer>Footer content</template>
+            </el-card></el-col
+          >
+        </el-row>
+        <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
         <el-dialog v-model="dialogFormVisible" title="Добавить колоду" width="700">
           <el-form :model="form">
             <el-form-item label="Название колоды" :label-width="formLabelWidth">
@@ -226,7 +304,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-color: #0a092d;
+  background-color: #e9eaec;
   color: white;
   display: flex;
   justify-content: flex-end;
@@ -235,7 +313,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
 }
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
-  background: #0a092d;
+  background: #e9eaec;
   height: 100vh;
 }
 .layout-container-demo .el-menu {
