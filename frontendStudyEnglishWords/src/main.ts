@@ -35,9 +35,7 @@ router.beforeEach((to, from, next) => {
     userStore.logout() // Сбрасываем авторизацию
     next({ name: 'login' })
   } else if (!isAuthenticated && to.name !== 'login' && to.name !== 'registration') {
-    next({ name: 'login' }) // Перенаправляем на логин
-  } else if (isAuthenticated && (to.name === 'login' || to.name === 'registration')) {
-    next({ name: 'main' }) // Если авторизован, перенаправляем на главную
+    next({ name: 'registration' }) // Разрешаем доступ к странице регистрации
   } else {
     next() // Разрешаем переход
   }
