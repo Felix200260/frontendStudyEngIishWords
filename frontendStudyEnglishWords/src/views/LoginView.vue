@@ -78,32 +78,33 @@ const rules = reactive<FormRules<typeof dataForm>>({
 // Отправка данных формы
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-
   formEl.validate(async (valid) => {
     if (valid) {
+      console.log('Данные отправляются...!')
+
       try {
-        // Отправка данных на сервер
-        const response = await axios.post('/api/login', {
+        // Отправляем данные на сервер
+        const response = await sendUserAutoDate(dataForm.name, dataForm.email, dataForm.pass)
+
+        console.log('Ответ сервера:', response)
+
+        // Сохраняем данные в Pinia
+        userStore.setUser({
+          name: dataForm.name,
           email: dataForm.email,
           pass: dataForm.pass
         })
-        console.log('Вошли в submitForm')
-        if (response.data.success) {
-          // Сохранение пользователя в Pinia
-          userStore.setUser({
-            name: response.data.name,
-            email: dataForm.email,
-            pass: dataForm.pass
-          })
-          console.log('Вошли в условие')
 
-          // Перенаправление на главную страницу
-          router.push({ name: 'main' })
-        } else {
-          console.error('Ошибка авторизации')
-        }
+        // Очистка полей формы
+        dataForm.name = ''
+        dataForm.email = ''
+        dataForm.pass = ''
+        dataForm.checkPass = ''
+
+        // Перенаправляем пользователя
+        router.push({ name: 'main' })
       } catch (error) {
-        console.error('Ошибка при запросе:', error)
+        console.error('Ошибка при отправке данных:', error)
       }
     } else {
       console.log('Ошибка при валидации формы')

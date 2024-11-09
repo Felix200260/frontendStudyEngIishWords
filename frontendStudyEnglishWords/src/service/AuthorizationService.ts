@@ -1,19 +1,16 @@
 import axios from 'axios'
-import dataForm from '@/views/RegistrationView.vue'
-export async function sendUserAutoDate() {
+export async function sendUserAutoDate(name: string, email: string, password: string) {
   try {
     const response = await axios.post('/api/user/register', {
-      name: dataForm.name,
-      email: dataForm.email,
-      password: dataForm.pass
+      name,
+      email,
+      password
     })
 
     console.log('Успешно отправлено:', response.data)
-    dataForm.name = ''
-    dataForm.email = ''
-    dataForm.pass = ''
-    dataForm.checkPass = ''
+    return response.data
   } catch (error) {
     console.log('гг, данные неотправлены')
+    throw error
   }
 }
