@@ -42,7 +42,7 @@
           </div>
           <!--Добавить колоду-->
           <div class="addDeck">
-            <el-button type="primary" :icon="Plus" @click="dialogFormVisible = true"
+            <el-button type="primary" :icon="Plus" @click="navigateToImportCards"
               >Добавить колоду</el-button
             >
           </div>
@@ -163,7 +163,8 @@
                 type="textarea"
                 placeholder="Please input"
               />
-              <el-button style="margin-top: 20px" size="default" @click="openWindowImportCards">
+              <el-button style="margin-top: 20px" size="default">
+                <!--                @click="openWindowImportCards"-->
                 <router-link to="/importCards">Импортировать</router-link></el-button
               >
             </el-form-item>
@@ -190,6 +191,13 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { Navigation, Pagination } from 'swiper/modules'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const navigateToImportCards = () => {
+  router.push('/importCards')
+}
 
 onMounted(() => {
   new Swiper('.mySwiper', {
@@ -207,7 +215,7 @@ onMounted(() => {
 })
 
 const dialogFormVisible = ref(false)
-// const formLabelWidth = '140px'
+const formLabelWidth = '140px'
 
 const form = reactive({
   name: '',

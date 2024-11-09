@@ -95,12 +95,19 @@ const messageValidate2 = (rule: any, value: any, callback: any) => {
 const dataForm = reactive({
   // сохранение данных формы
   email: '',
-  pass: ''
+  pass: '',
+  checkPass: ''
 })
 
 const rules = reactive<FormRules<typeof dataForm>>({
   pass: [{ required: true, validator: messageValidate, trigger: 'blur' }],
   checkPass: [{ required: true, validator: messageValidate2, trigger: 'blur' }]
+})
+
+const form = reactive({
+  email: '',
+  pass: '',
+  checkPass: ''
 })
 </script>
 
