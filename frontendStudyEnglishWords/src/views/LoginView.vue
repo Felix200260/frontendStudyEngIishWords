@@ -40,8 +40,8 @@
 
       <!-- Кнопки отправки и сброса -->
       <el-form-item>
-        <el-button type="primary" @click="submitForm(ruleFormRef)"> Submit</el-button>
-        <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
+        <el-button type="primary" @click="submitForm(ruleFormRef)">Войти</el-button>
+        <el-button @click="resetForm(ruleFormRef)">Сбросить</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -49,66 +49,75 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user' // Подключение Pinia
+import axios from 'axios' // Для запросов на сервер
 import type { FormProps, FormInstance, FormRules } from 'element-plus'
+
+// Инициализация
+const userStore = useUserStore()
+const router = useRouter()
 
 const labelPositionAll = ref<FormProps['labelPosition']>('top')
 
-const submitForm = (formEl: FormInstance | undefined) => {
+// Данные формы
+const dataForm = reactive({
+  email: '',
+  pass: ''
+})
+
+// Валидация
+const rules = reactive<FormRules<typeof dataForm>>({
+  email: [
+    { required: true, message: 'Введите email адрес', trigger: 'blur' },
+    { type: 'email', message: 'Введите корректный email адрес', trigger: ['blur', 'change'] }
+  ],
+  pass: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
+})
+
+// Отправка данных формы
+const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  formEl.validate((valid) => {
+
+  formEl.validate(async (valid) => {
     if (valid) {
-      console.log('submit!')
+      try {
+        // Отправка данных на сервер
+        const response = await axios.post('/api/login', {
+          email: dataForm.email,
+          pass: dataForm.pass
+        })
+        console.log('Вошли в submitForm')
+        if (response.data.success) {
+          // Сохранение пользователя в Pinia
+          userStore.setUser({
+            name: response.data.name,
+            email: dataForm.email,
+            pass: dataForm.pass
+          })
+          console.log('Вошли в условие')
+
+          // Перенаправление на главную страницу
+          router.push({ name: 'main' })
+        } else {
+          console.error('Ошибка авторизации')
+        }
+      } catch (error) {
+        console.error('Ошибка при запросе:', error)
+      }
     } else {
-      console.log('error submit!')
+      console.log('Ошибка при валидации формы')
     }
   })
 }
 
+// Сброс формы
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
 }
 
 const ruleFormRef = ref<FormInstance>()
-
-const messageValidate = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Введите пароль'))
-  } else {
-    if (dataForm.checkPass !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value.validateField('checkPass')
-    }
-    callback()
-  }
-}
-const messageValidate2 = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Введите пароль ещё раз'))
-  } else if (value !== dataForm.pass) {
-    callback(new Error('Пароли не совпадают!'))
-  } else {
-    callback()
-  }
-}
-
-const dataForm = reactive({
-  // сохранение данных формы
-  email: '',
-  pass: '',
-  checkPass: ''
-})
-
-const rules = reactive<FormRules<typeof dataForm>>({
-  pass: [{ required: true, validator: messageValidate, trigger: 'blur' }],
-  checkPass: [{ required: true, validator: messageValidate2, trigger: 'blur' }]
-})
-
-const form = reactive({
-  email: '',
-  pass: '',
-  checkPass: ''
-})
 </script>
 
 <style scoped>

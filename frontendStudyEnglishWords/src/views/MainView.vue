@@ -49,9 +49,10 @@
           <!---->
           <div class="outputFromSystem">
             <el-icon class="" style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
-              <SwitchButton />
+              <SwitchButton @click="logout" />
             </el-icon>
-            <router-link to="/">Выйти</router-link>
+            <!--            <router-link to="/">Выйти</router-link>-->
+            <button @click="logout">Выйти</button>
           </div>
         </div>
       </el-header>
@@ -192,11 +193,19 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { Navigation, Pagination } from 'swiper/modules'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 
 const navigateToImportCards = () => {
   router.push('/importCards')
+}
+
+const userStore = useUserStore()
+
+const logout = () => {
+  userStore.logout() // Вызываем метод logout из Pinia
+  router.push({ name: 'login' }) // Перенаправляем на страницу логина
 }
 
 onMounted(() => {
