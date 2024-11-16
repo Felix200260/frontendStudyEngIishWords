@@ -1,16 +1,15 @@
 import axios from 'axios'
-export async function sendUserAutoDate(name: string, email: string, password: string) {
+
+export async function sendUserAutoDate(dataForm: { name: string; email: string; pass: string }) {
   try {
     const response = await axios.post('/api/user/register', {
-      name,
-      email,
-      password
+      name: dataForm.name,
+      email: dataForm.email,
+      password: dataForm.pass // Название поля должно совпадать с ожидаемым бэкендом
     })
 
     console.log('Успешно отправлено:', response.data)
-    return response.data
   } catch (error) {
-    console.log('гг, данные неотправлены')
-    throw error
+    console.error('Ошибка при отправке данных:', error)
   }
 }

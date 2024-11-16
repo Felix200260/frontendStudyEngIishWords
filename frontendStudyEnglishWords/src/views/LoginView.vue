@@ -53,6 +53,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user' // Подключение Pinia
 import axios from 'axios' // Для запросов на сервер
 import type { FormProps, FormInstance, FormRules } from 'element-plus'
+import { sendUserAutoDate } from '@/service/AuthorizationService'
 
 // Инициализация
 const userStore = useUserStore()
@@ -62,6 +63,7 @@ const labelPositionAll = ref<FormProps['labelPosition']>('top')
 
 // Данные формы
 const dataForm = reactive({
+  name: '',
   email: '',
   pass: ''
 })
@@ -84,7 +86,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
       try {
         // Отправляем данные на сервер
-        const response = await sendUserAutoDate(dataForm.name, dataForm.email, dataForm.pass)
+        const response = await sendUserAutoDate(dataForm)
 
         console.log('Ответ сервера:', response)
 
@@ -99,7 +101,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         dataForm.name = ''
         dataForm.email = ''
         dataForm.pass = ''
-        dataForm.checkPass = ''
 
         // Перенаправляем пользователя
         router.push({ name: 'main' })

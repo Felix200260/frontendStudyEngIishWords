@@ -88,7 +88,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       router.push({ name: 'main' })
       // console.log('Pinia', userStore.name, userStore.email)
       try {
-        await sendUserAutoDate()
+        await sendUserAutoDate(dataForm)
         router.push({ name: 'main' })
       } catch (error) {
         console.error('Ошибка при отправке данных:', error)
