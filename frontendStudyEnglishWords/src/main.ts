@@ -15,7 +15,7 @@ import { useUserStore } from '@/stores/user'
 // Проверка работы бэкенда
 async function checkBackend(): Promise<boolean> {
   try {
-    const response = await axios.get('http://localhost:5000/api/health') // URL для проверки бэкенда
+    const response = await axios.get('http://localhost:5240/api/health/health') // URL для проверки бэкенда
     console.log('Backend is running:', response.data)
     return true
   } catch (error) {
