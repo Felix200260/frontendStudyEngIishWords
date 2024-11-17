@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace studyEnglishWords.Models
@@ -10,11 +11,16 @@ namespace studyEnglishWords.Models
         public DbSet<User> Users { get; set; }
         
         // Модель данных для пользователя
+        [Table("users")]
         public class User
         {
-            public int Id { get; set; } // Первичный ключ
-            public string? Name { get; set; }
-            public string? Email { get; set; }
+            [Column("id")]
+            public int Id { get; set; }
+            [Column("first_name")]
+            public string? First_name { get; set; }
+            [Column("unique_email")]
+            public string? UniqueEmail { get; set; }
+            [Column("password")]
             public string? Password { get; set; }
         }
     }

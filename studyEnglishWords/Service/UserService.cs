@@ -15,13 +15,13 @@ namespace studyEnglishWords.Service
         {
             var user = new AppDbContext.User
             {
-                Name = userDto.Name,
-                Email = userDto.Email,
+                First_name = userDto.First_name,
+                UniqueEmail = userDto.UniqueEmail,
                 Password = userDto.Password // todo Узнать как кэшировать пароль
             };
 
             _context.Users.Add(user);
-            Console.WriteLine($"Добавление пользователя: {user.Name}, {user.Email}"); // Логируем данные
+            Console.WriteLine($"Добавление пользователя: {user.First_name}, {user.UniqueEmail}"); // Логируем данные
             await _context.SaveChangesAsync();
         }
     }
