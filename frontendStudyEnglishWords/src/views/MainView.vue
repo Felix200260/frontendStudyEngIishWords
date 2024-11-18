@@ -42,10 +42,85 @@
           </div>
           <!--Добавить колоду-->
           <div class="addDeck">
-            <el-button type="primary" :icon="Plus" @click="navigateToImportCards"
+            <el-button type="primary" :icon="Plus" @click="dialogOpenAddDeck = true"
               >Добавить колоду</el-button
             >
           </div>
+
+          <el-dialog v-model="dialogOpenAddDeck" title="Добавление колоды" width="500">
+            <el-form :model="form">
+              <el-form-item label="Название колоды" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item label="Категория" :label-width="formLabelWidth">
+                <el-select
+                  v-model="form.region"
+                  placeholder="Выбрать"
+                  @change="handleCategoryChange"
+                >
+                  <el-option
+                    v-for="category in categories"
+                    :key="category.value"
+                    :value="category.value"
+                  >
+                    <template #default>
+                      <div
+                        style="display: flex; justify-content: space-between; align-items: center"
+                      >
+                        <span>{{ category.label }}</span>
+                        <el-button
+                          type="text"
+                          size="mini"
+                          @click.stop="confirmDeleteCategory(category)"
+                        >
+                          Удалить
+                        </el-button>
+                      </div>
+                    </template>
+                  </el-option>
+                  <el-option label="+ Добавить" value="add" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Описание" :label-width="formLabelWidth">
+                <el-input
+                  v-model="textarea"
+                  style="width: 240px"
+                  :rows="2"
+                  type="textarea"
+                  placeholder="Введите описание"
+                />
+              </el-form-item>
+              <!-- Диалог для добавления новой категории -->
+              <el-dialog v-model="dialogAddCategoryVisible" title="Добавить категорию">
+                <el-form>
+                  <el-form-item label="Название категории">
+                    <el-input v-model="newCategoryName" />
+                  </el-form-item>
+                </el-form>
+                <template #footer>
+                  <el-button @click="dialogAddCategoryVisible = false">Отмена</el-button>
+                  <el-button type="primary" @click="addCategory">Добавить</el-button>
+                </template>
+              </el-dialog>
+              <!-- Диалог для удаления категории -->
+              <el-dialog v-model="dialogDeleteCategoryVisible" title="Удалить категорию">
+                <p>Вы уверены, что хотите удалить категорию "{{ categoryToDelete?.label }}"?</p>
+                <template #footer>
+                  <el-button @click="dialogDeleteCategoryVisible = false">Отмена</el-button>
+                  <el-button type="danger" @click="deleteCategory">Удалить</el-button>
+                </template>
+              </el-dialog>
+            </el-form>
+
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false"> Confirm </el-button>
+                <!--                //todo после нажатия создание колоды-->
+                <!--                //todo подключить pinia чтобы введёная информация по добавлению информации по коложе не исчезала пр  перезагрузке, а сохранялось-->
+              </div>
+            </template>
+          </el-dialog>
           <!---->
           <div class="outputFromSystem">
             <el-icon class="" style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
@@ -198,8 +273,57 @@ import { useUserStore } from '@/stores/user'
 const router = useRouter()
 
 const navigateToImportCards = () => {
-  router.push('/importCards')
+  // router.push('/importCards')
 }
+
+//Список категорий , тегов и прочее для сортировки колод===========================================
+const categories = ref([
+  { label: 'Путешествия', value: 'travel' },
+  { label: 'Работа', value: 'work' }
+])
+//===========================================
+//ологика для обработки выбора категории===========================================
+const dialogAddCategoryVisible = ref(false)
+const newCategoryName = ref('')
+
+const handleCategoryChange = (value: string) => {
+  if (value === 'add') {
+    dialogAddCategoryVisible.value = true
+  }
+}
+
+const addCategory = () => {
+  if (newCategoryName.value.trim()) {
+    categories.value.push({
+      label: newCategoryName.value,
+      value: newCategoryName.value.toLowerCase().replace(/\s+/g, '_')
+    })
+    newCategoryName.value = ''
+    dialogAddCategoryVisible.value = false
+  }
+}
+//===========================================
+//Удаление категорий===========================================
+const dialogDeleteCategoryVisible = ref(false)
+const categoryToDelete = ref<{ label: string; value: string } | null>(null)
+
+const confirmDeleteCategory = (category: { label: string; value: string }) => {
+  //подтверждения удаления
+  categoryToDelete.value = category
+  dialogDeleteCategoryVisible.value = true
+}
+
+const deleteCategory = () => {
+  if (categoryToDelete.value) {
+    categories.value = categories.value.filter((cat) => cat.value !== categoryToDelete.value?.value)
+    categoryToDelete.value = null
+    dialogDeleteCategoryVisible.value = false
+  }
+}
+
+//===========================================
+
+const dialogOpenAddDeck = ref(false)
 
 const userStore = useUserStore()
 
