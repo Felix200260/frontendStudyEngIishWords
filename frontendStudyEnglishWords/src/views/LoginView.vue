@@ -30,12 +30,12 @@
           }
         ]"
       >
-        <el-input v-model="dataForm.email" />
+        <el-input v-model="dataForm.unique_email" />
       </el-form-item>
 
       <!-- Поле для пароля -->
       <el-form-item label="Пароль" prop="pass">
-        <el-input v-model="dataForm.pass" type="password" autocomplete="off" />
+        <el-input v-model="dataForm.password" type="password" autocomplete="off" />
       </el-form-item>
 
       <!-- Кнопки отправки и сброса -->
@@ -54,61 +54,38 @@ import { useUserStore } from '@/stores/user' // Подключение Pinia
 import axios from 'axios' // Для запросов на сервер
 import type { FormProps, FormInstance, FormRules } from 'element-plus'
 import { sendUserAutoDate } from '@/service/AuthorizationService'
+import { createUserForm } from '@/utils/formData'
 
 // Инициализация
 const userStore = useUserStore()
 const router = useRouter()
+const dataForm = createUserForm() //данные формы
 
 const labelPositionAll = ref<FormProps['labelPosition']>('top')
 
-// Данные формы
-const dataForm = reactive({
-  name: '',
-  email: '',
-  pass: ''
-})
-
 // Валидация
-const rules = reactive<FormRules<typeof dataForm>>({
-  email: [
+const rules = {
+  unique_email: [
     { required: true, message: 'Введите email адрес', trigger: 'blur' },
     { type: 'email', message: 'Введите корректный email адрес', trigger: ['blur', 'change'] }
   ],
-  pass: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
-})
+  password: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
+}
 
 // Отправка данных формы
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      console.log('Данные отправляются...!')
-
       try {
-        // Отправляем данные на сервер
         const response = await sendUserAutoDate(dataForm)
-
-        console.log('Ответ сервера:', response)
-
-        // Сохраняем данные в Pinia
-        userStore.setUser({
-          name: dataForm.name,
-          email: dataForm.email,
-          pass: dataForm.pass
-        })
-
-        // Очистка полей формы
-        dataForm.name = ''
-        dataForm.email = ''
-        dataForm.pass = ''
-
-        // Перенаправляем пользователя
+        console.log('Вход выполнен:', response)
         router.push({ name: 'main' })
       } catch (error) {
-        console.error('Ошибка при отправке данных:', error)
+        console.error('Ошибка при входе:', error)
       }
     } else {
-      console.log('Ошибка при валидации формы')
+      console.log('Ошибка валидации формы')
     }
   })
 }

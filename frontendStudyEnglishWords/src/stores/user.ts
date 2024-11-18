@@ -8,10 +8,10 @@ export const useUserStore = defineStore('user', {
     isAuthenticated: false // Статус авторизации
   }),
   actions: {
-    setUser(data: { name: string; email: string; pass: string }) {
-      this.name = data.name
-      this.email = data.email
-      this.pass = data.pass
+    setUser(data: { first_name: string; unique_email: string; password: string }) {
+      this.name = data.first_name
+      this.email = data.unique_email
+      this.pass = data.password
       this.isAuthenticated = true
 
       localStorage.setItem(

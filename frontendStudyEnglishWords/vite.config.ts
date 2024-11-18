@@ -17,7 +17,7 @@ export default defineConfig({
     port: 8080, // Vite Dev Server порт
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // URL вашего ASP.NET Core бэкенда
+        target: 'http://localhost:5240', // URL вашего ASP.NET Core бэкенда
         changeOrigin: true,
         secure: false
       }

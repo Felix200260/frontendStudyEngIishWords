@@ -14,12 +14,12 @@
       </div>
       <!-- Поле для имени -->
       <el-form-item style="margin-top: 20px" label="Имя">
-        <el-input v-model="dataForm.name" />
+        <el-input v-model="dataForm.first_name" />
       </el-form-item>
 
       <!-- Поле для email -->
       <el-form-item
-        prop="email"
+        prop="unique_email"
         label="Email"
         :rules="[
           {
@@ -34,12 +34,12 @@
           }
         ]"
       >
-        <el-input v-model="dataForm.email" />
+        <el-input v-model="dataForm.unique_email" />
       </el-form-item>
 
       <!-- Поле для пароля -->
       <el-form-item label="Пароль" prop="pass">
-        <el-input v-model="dataForm.pass" type="password" autocomplete="off" />
+        <el-input v-model="dataForm.password" type="password" autocomplete="off" />
       </el-form-item>
 
       <!-- Поле для подтверждения пароля -->
@@ -81,14 +81,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
       // сохраняю в хранилище
       userStore.setUser({
-        name: dataForm.name,
-        email: dataForm.email,
-        pass: dataForm.pass
+        first_name: dataForm.first_name,
+        unique_email: dataForm.unique_email,
+        password: dataForm.password
       })
       router.push({ name: 'main' })
       // console.log('Pinia', userStore.name, userStore.email)
       try {
-        await sendUserAutoDate(dataForm)
+        await sendUserAutoDate({
+          first_name: dataForm.first_name, // Маппинг на first_name
+          unique_email: dataForm.unique_email, // Маппинг на unique_email
+          password: dataForm.password // Маппинг на password
+        })
         router.push({ name: 'main' })
       } catch (error) {
         console.error('Ошибка при отправке данных:', error)
@@ -120,22 +124,29 @@ const messageValidate = (rule: any, value: any, callback: any) => {
 const messageValidate2 = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Введите пароль ещё раз'))
-  } else if (value !== dataForm.pass) {
+  } else if (value !== dataForm.password) {
     callback(new Error('Пароли не совпадают!'))
   } else {
     callback()
   }
 }
 
-const dataForm = reactive({
-  name: '',
-  email: '',
-  pass: '',
+interface UserForm {
+  first_name: string
+  unique_email: string
+  password: string
+  checkPass: string
+}
+
+const dataForm = reactive<UserForm>({
+  first_name: '',
+  unique_email: '',
+  password: '',
   checkPass: ''
 })
 
-const rules = reactive<FormRules<typeof dataForm>>({
-  pass: [{ required: true, validator: messageValidate, trigger: 'blur' }],
+const rules = reactive<FormRules<UserForm>>({
+  password: [{ required: true, validator: messageValidate, trigger: 'blur' }],
   checkPass: [{ required: true, validator: messageValidate2, trigger: 'blur' }]
 })
 </script>
