@@ -115,7 +115,7 @@
             <template #footer>
               <div class="dialog-footer">
                 <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false"> Confirm </el-button>
+                <el-button type="primary" @click="addCard">Confirm</el-button>
                 <!--                //todo после нажатия создание колоды-->
                 <!--                //todo подключить pinia чтобы введёная информация по добавлению информации по коложе не исчезала пр  перезагрузке, а сохранялось-->
               </div>
@@ -133,99 +133,34 @@
       </el-header>
 
       <el-main style="height: calc(100vh - 50px)">
-        <el-row style="margin-top: 20px; margin-left: 20px" :gutter="20">
-          <!-- Кололнка 1 -->
-          <el-col :span="6"
-            ><div class="grid-content ep-bg-purple" />
-            <!-- Карта 1 -->
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card>
-            <!-- Карта 1 -->
-          </el-col>
-          <!-- Кололнка 1 -->
-          <!-- Кололнка 2 -->
-          <el-col :span="6"
-            ><div class="grid-content ep-bg-purple" />
-            <!-- Карта 2 -->
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card>
-            <!-- Карта 2 -->
-          </el-col>
-          <!-- Кололнка 2 -->
-          <el-col :span="6"
-            ><div class="grid-content ep-bg-purple" />
-            <!-- Карта 2 -->
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card>
-            <!-- Карта 2 -->
-            <!-- Кололнка 2 -->
-          </el-col>
-        </el-row>
-        <el-row style="margin-top: 20px; margin-left: 20px" :gutter="20">
-          <!-- Кололнка 3 -->
-          <el-col :span="6">
-            <div class="grid-content ep-bg-purple" />
-            <!-- Карта 3 -->
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card>
-            <!-- Карта 3 -->
-          </el-col>
-          <!-- Кололнка 3 -->
-          <el-col :span="6">
-            <div class="grid-content ep-bg-purple" />
-            <!-- Карта 4 -->
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card>
-            <!-- Карта 4 -->
-          </el-col>
-          <el-col :span="6"
-            ><div class="grid-content ep-bg-purple" />
-            <el-card style="max-width: 480px">
-              <template #header>
-                <div class="card-header">
-                  <span>Card name</span>
-                </div>
-              </template>
-              <p v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</p>
-              <template #footer>Footer content</template>
-            </el-card></el-col
-          >
-        </el-row>
+        <template v-if="cards.length">
+          <!-- Список карточек -->
+          <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
+            <el-col v-for="(card, index) in cards" :key="index" :span="6">
+              <el-card style="max-width: 480px">
+                <template #header>
+                  <div class="card-header">
+                    <span>{{ card.title }}</span>
+                  </div>
+                </template>
+                <p class="text item">{{ card.content }}</p>
+                <template #footer>Footer content</template>
+              </el-card>
+            </el-col>
+          </el-row>
+        </template>
+        <template v-else>
+          <!-- Заглушка при отсутствии карточек -->
+          <div class="empty-placeholder" style="justify-content: center" align-items="center">
+            <el-icon><Plus /></el-icon>
+            <p>
+              Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду", чтобы создать новую.
+            </p>
+            <el-button type="primary" @click="dialogOpenAddDeck = true">
+              Добавить колоду
+            </el-button>
+          </div>
+        </template>
         <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
         <el-dialog v-model="dialogFormVisible" title="Добавить колоду" width="700">
           <el-form :model="form">
@@ -440,6 +375,20 @@ const item = {
   address: 'No. 189, Grove St, Los Angeles'
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
+
+//Генерация колод========================================================================================
+const cards = ref<{ title: string; content: string }[]>([])
+
+const addCard = () => {
+  if (form.name && textarea.value) {
+    cards.value.push({ title: form.name, content: textarea.value })
+    form.name = ''
+    textarea.value = ''
+    dialogFormVisible.value = false
+  }
+}
+
+//Генерация колод========================================================================================
 </script>
 
 <style scoped>
@@ -488,5 +437,32 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #9e9e9e;
+  font-size: 16px;
+}
+
+.empty-placeholder p {
+  margin: 16px 0;
+  font-size: 18px;
+}
+
+.empty-placeholder .el-icon {
+  font-size: 48px;
+  color: #9e9e9e;
+  margin-bottom: 16px;
+}
+
+.layout-container-demo .el-main {
+  height: 100%;
+  overflow: hidden; /* Убирает ненужный скролл */
 }
 </style>
