@@ -7,10 +7,8 @@ namespace studyEnglishWords.Models
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
         
-        // Таблица для пользователей
         public DbSet<User> Users { get; set; }
         
-        // Модель данных для пользователя
         [Table("users")]
         public class User
         {

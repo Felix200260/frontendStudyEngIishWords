@@ -115,8 +115,7 @@
             <template #footer>
               <div class="dialog-footer">
                 <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-                <el-button type="primary" @click="addCard">Confirm</el-button>
-                <!--                //todo после нажатия создание колоды-->
+                <el-button type="primary" @click="addDeck">Confirm</el-button>
                 <!--                //todo подключить pinia чтобы введёная информация по добавлению информации по коложе не исчезала пр  перезагрузке, а сохранялось-->
               </div>
             </template>
@@ -133,10 +132,16 @@
       </el-header>
 
       <el-main style="height: calc(100vh - 50px)">
-        <template v-if="cards.length">
-          <!-- Список карточек -->
+        <template v-if="decks.length">
+          <div>{{ decks.length }}</div>
+          <!-- Список колод -->
           <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
-            <el-col v-for="(card, index) in cards" :key="index" :span="6">
+            <el-col
+              v-for="(card, index) in paginatedDecks"
+              :key="index"
+              :span="6"
+              style="margin-top: 50px"
+            >
               <el-card style="max-width: 480px">
                 <template #header>
                   <div class="card-header">
@@ -151,14 +156,32 @@
         </template>
         <template v-else>
           <!-- Заглушка при отсутствии карточек -->
-          <div class="empty-placeholder" style="justify-content: center" align-items="center">
-            <el-icon><Plus /></el-icon>
-            <p>
-              Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду", чтобы создать новую.
-            </p>
-            <el-button type="primary" @click="dialogOpenAddDeck = true">
-              Добавить колоду
-            </el-button>
+          <div class="empty-placeholder">
+            <div class="zaglushka" style="flex-grow: 1">
+              <el-icon>
+                <Plus />
+              </el-icon>
+              <p>
+                Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду", чтобы создать
+                новую.
+              </p>
+              <el-button type="primary" @click="dialogOpenAddDeck = true">
+                Добавить колоду
+              </el-button>
+            </div>
+            <!--Пагинация-->
+            <div class="footerForZaglushka">
+              <el-pagination
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :total="decks.length"
+                class="pagination"
+                default-page-size="1"
+                layout="prev, pager, next"
+                background
+                @current-change="currentPage = $event"
+              />
+            </div>
           </div>
         </template>
         <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
@@ -193,7 +216,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { SwitchButton, Message, Setting } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { Edit, Plus } from '@element-plus/icons-vue'
@@ -267,20 +290,20 @@ const logout = () => {
   router.push({ name: 'login' }) // Перенаправляем на страницу логина
 }
 
-onMounted(() => {
-  new Swiper('.mySwiper', {
-    slidesPerView: 3,
-    grid: {
-      rows: 2
-    },
-    spaceBetween: 30,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true
-    },
-    modules: [Navigation, Pagination]
-  })
-})
+// onMounted(() => {
+//   new Swiper('.mySwiper', {
+//     slidesPerView: 3,
+//     grid: {
+//       rows: 2
+//     },
+//     spaceBetween: 30,
+//     pagination: {
+//       el: '.swiper-pagination',
+//       clickable: true
+//     },
+//     modules: [Navigation, Pagination]
+//   })
+// })
 
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
@@ -377,18 +400,34 @@ const item = {
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 
 //Генерация колод========================================================================================
-const cards = ref<{ title: string; content: string }[]>([])
+const decks = ref<{ title: string; content: string }[]>([])
 
-const addCard = () => {
+const addDeck = () => {
   if (form.name && textarea.value) {
-    cards.value.push({ title: form.name, content: textarea.value })
+    decks.value.push({ title: form.name, content: textarea.value })
     form.name = ''
     textarea.value = ''
     dialogFormVisible.value = false
+
+    // Убедитесь, что total в пагинации обновлен:
+    if (currentPage.value > Math.ceil(decks.value.length / pageSize.value)) {
+      currentPage.value = Math.ceil(decks.value.length / pageSize.value)
+    }
   }
 }
 
 //Генерация колод========================================================================================
+//Пагинация========================================================================================
+const currentPage = ref(1) // Текущая страница
+const pageSize = ref(2) // Количество колод на странице
+
+const paginatedDecks = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return decks.value.slice(start, end)
+})
+
+//Пагинация========================================================================================
 </script>
 
 <style scoped>
@@ -401,18 +440,16 @@ const addCard = () => {
   align-items: center;
   padding: 0 20px;
 }
+
 .layout-container-demo .el-aside {
   color: var(--el-text-color-primary);
   background: #e9eaec;
   height: 100vh;
 }
-.layout-container-demo .el-menu {
+/*.layout-container-demo .el-menu {
   border-right: none;
   height: 50px;
-}
-.layout-container-demo .el-main {
-  padding: 0;
-}
+}*/
 
 .toolbar {
   display: flex;
@@ -424,11 +461,12 @@ const addCard = () => {
 }
 
 /* Стили для swiper */
-.swiper {
+/*.swiper {
   width: 100%;
   height: 100%;
-}
+}*/
 
+/*
 .swiper-slide {
   text-align: center;
   background: #0041cf;
@@ -437,7 +475,7 @@ const addCard = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
 .empty-placeholder {
   display: flex;
@@ -450,11 +488,6 @@ const addCard = () => {
   font-size: 16px;
 }
 
-.empty-placeholder p {
-  margin: 16px 0;
-  font-size: 18px;
-}
-
 .empty-placeholder .el-icon {
   font-size: 48px;
   color: #9e9e9e;
@@ -464,5 +497,8 @@ const addCard = () => {
 .layout-container-demo .el-main {
   height: 100%;
   overflow: hidden; /* Убирает ненужный скролл */
+}
+
+.zaglushka {
 }
 </style>

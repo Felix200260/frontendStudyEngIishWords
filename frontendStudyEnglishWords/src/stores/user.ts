@@ -5,7 +5,7 @@ export const useUserStore = defineStore('user', {
     name: '',
     email: '',
     pass: '',
-    isAuthenticated: false // Статус авторизации
+    isAuthenticated: false
   }),
   actions: {
     setUser(data: { first_name: string; unique_email: string; password: string }) {
@@ -24,7 +24,8 @@ export const useUserStore = defineStore('user', {
       console.log('User set:', this.name, this.email)
     },
     loadUser() {
-      const savedUser = localStorage.getItem('user')
+      //todo ?WTF
+      const savedUser = localStorage.getItem('user') //todo ?WTF
       if (savedUser) {
         const { name, email } = JSON.parse(savedUser)
         this.name = name

@@ -13,23 +13,23 @@ import ImportCards from '@/views/ImportCards.vue'
 import { useUserStore } from '@/stores/user'
 
 // Проверка работы бэкенда
-async function checkBackend(): Promise<boolean> {
-  try {
-    const response = await axios.get('http://localhost:5240/api/health/health') // URL для проверки бэкенда
-    console.log('Backend is running:', response.data)
-    return true
-  } catch (error) {
-    console.warn('Backend is not running:', error)
-    return false
-  }
-}
+// async function checkBackend(): Promise<boolean> {
+//   try {
+//     const response = await axios.get('http://localhost:5240/api/health/health') // URL для проверки бэкенда
+//     console.log('Backend is running:', response.data)
+//     return true
+//   } catch (error) {
+//     console.warn('Backend is not running:', error)
+//     return false
+//   }
+// }
 
 async function main() {
   // Проверка работы бэкенда перед запуском приложения
-  const backendAvailable = await checkBackend()
-  if (!backendAvailable) {
-    console.warn('Backend is not available. Starting app in offline mode.')
-  }
+  // const backendAvailable = await checkBackend()
+  // if (!backendAvailable) {
+  //   console.warn('Backend is not available. Starting app in offline mode.')
+  // }
 
   const pinia = createPinia()
   const app = createApp(App)
@@ -47,13 +47,13 @@ async function main() {
   // Глобальная проверка авторизации
   router.beforeEach((to, from, next) => {
     const userStore = useUserStore()
-    userStore.loadUser() // Загружаем данные пользователя из localStorage
+    userStore.loadUser() // Загружаем данные пользователя из localStorage //todo ?WTF
 
     const isAuthenticated = userStore.isAuthenticated
 
     if (to.name === 'logout') {
       userStore.logout() // Сбрасываем авторизацию
-      next({ name: 'login' })
+      next({ name: 'login' }) //todo ?WTF next
     } else if (!isAuthenticated && to.name !== 'login' && to.name !== 'registration') {
       next({ name: 'registration' }) // Разрешаем доступ к странице регистрации
     } else {

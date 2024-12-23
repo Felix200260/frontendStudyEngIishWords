@@ -77,15 +77,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      console.log('submit!')
-
       // сохраняю в хранилище
       userStore.setUser({
         first_name: dataForm.first_name,
         unique_email: dataForm.unique_email,
         password: dataForm.password
       })
-      router.push({ name: 'main' })
+      router.push({ name: 'main' }) //todo ?WTF
       // console.log('Pinia', userStore.name, userStore.email)
       try {
         await sendUserAutoDate({
@@ -104,11 +102,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
+  if (!formEl) return //todo ?WTF
   formEl.resetFields()
 }
 
-const ruleFormRef = ref<FormInstance>()
+const ruleFormRef = ref<FormInstance>() //todo ?WTF
 
 const messageValidate = (rule: any, value: any, callback: any) => {
   if (value === '') {
@@ -146,7 +144,7 @@ const dataForm = reactive<UserForm>({
 })
 
 const rules = reactive<FormRules<UserForm>>({
-  password: [{ required: true, validator: messageValidate, trigger: 'blur' }],
+  password: [{ required: true, validator: messageValidate, trigger: 'blur' }], //todo ?WTF
   checkPass: [{ required: true, validator: messageValidate2, trigger: 'blur' }]
 })
 </script>

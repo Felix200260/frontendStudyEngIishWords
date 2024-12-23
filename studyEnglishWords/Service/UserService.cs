@@ -21,7 +21,7 @@ namespace studyEnglishWords.Service
             };
 
             _context.Users.Add(user);
-            Console.WriteLine($"Добавление пользователя: {user.First_name}, {user.UniqueEmail}"); // Логируем данные
+            Console.WriteLine($"Добавление пользователя: {user.First_name}, {user.UniqueEmail}");
             await _context.SaveChangesAsync();
         }
     }
