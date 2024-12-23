@@ -104,6 +104,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return //todo ?WTF
   formEl.resetFields()
+  //Вручную удаляю
+  dataForm.first_name = ''
+  dataForm.unique_email = ''
+  dataForm.password = ''
+  dataForm.checkPass = ''
 }
 
 const ruleFormRef = ref<FormInstance>() //todo ?WTF

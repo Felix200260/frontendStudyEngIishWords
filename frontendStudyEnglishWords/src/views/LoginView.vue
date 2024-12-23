@@ -94,6 +94,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
+
+  dataForm.unique_email = ''
+  dataForm.password = ''
 }
 
 const ruleFormRef = ref<FormInstance>()
