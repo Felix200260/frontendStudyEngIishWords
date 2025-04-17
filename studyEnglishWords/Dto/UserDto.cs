@@ -1,18 +1,18 @@
 
 using System.Text.Json.Serialization;
 
-namespace studyEnglishWords.Models
+namespace studyEnglishWords.Dto
 {
     public class UserDto
     {
         public int Id { get; set; }
         [JsonPropertyName("first_name")]
-        public string? First_name { get; set; }
+        public string? firstName { get; set; }
 
         [JsonPropertyName("unique_email")]
-        public string? UniqueEmail { get; set; }
+        public string? uniqueEmail { get; set; }
 
         [JsonPropertyName("password")]
-        public string? Password { get; set; }
+        public string? password { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using studyEnglishWords.Dto;
 using studyEnglishWords.Models;
 
 namespace studyEnglishWords.Service
@@ -5,7 +6,7 @@ namespace studyEnglishWords.Service
     public class UserService
     {
         private readonly AppDbContext _context;
-        
+
         public UserService(AppDbContext context)
         {
             _context = context; // Инициализируем контекст базы данных
@@ -13,18 +14,53 @@ namespace studyEnglishWords.Service
 
         public async Task AddUserAsync(UserDto userDto)
         {
-            var user = new AppDbContext.User
+            // Создаём объект User
+            var user = new UserModal
             {
-                First_name = userDto.First_name,
-                UniqueEmail = userDto.UniqueEmail,
-                Password = userDto.Password // todo Узнать как кэшировать пароль
+                FirstName = userDto.firstName,
+                UniqueEmail = userDto.uniqueEmail,
+                Password = userDto.password // TODO: Узнать, как кэшировать пароль
             };
 
+            // Добавляем пользователя в базу данных
             _context.Users.Add(user);
-            Console.WriteLine($"Добавление пользователя: {user.First_name}, {user.UniqueEmail}");
+            Console.WriteLine($"Добавление пользователя: {user.FirstName}, {user.UniqueEmail}");
             await _context.SaveChangesAsync();
         }
-    }
+        
+        public UserModal GetById(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                throw new KeyNotFoundException($"Пользователь с ID {id} не найден");
     
-}
+            return user;
+        }
+        
+        public UserModal? Authenticate(string email, string password)
+        {
+            // Поиск пользователя по email
+            var user = _context.Users.FirstOrDefault(u => u.UniqueEmail == email);
+    
+            // Простая проверка пароля (без хэширования)
+            if (user != null && user.Password == password)
+            {
+                return user;
+            }
+    
+            return null;
+        }
 
+
+        private bool VerifyPassword(string password, string passwordHash)
+        {
+            // Здесь должна быть проверка хеша пароля
+            // Например, с использованием BCrypt:
+            // return BCrypt.Net.BCrypt.Verify(password, passwordHash);
+    
+            // Временная реализация:
+            return true; // Замените на реальную проверку
+        }
+
+    }
+}
