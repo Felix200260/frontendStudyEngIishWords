@@ -30,76 +30,93 @@
           }
         ]"
       >
-        <el-input v-model="dataForm.unique_email" />
+        <el-input v-model="dataForm.email" />
       </el-form-item>
 
       <!-- Поле для пароля -->
-      <el-form-item label="Пароль" prop="pass">
-        <el-input v-model="dataForm.password" type="password" autocomplete="off" />
+      <el-form-item label="Пароль" prop="password">
+        <el-input
+          v-model="dataForm.password"
+          type="password"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <!-- Кнопки отправки и сброса -->
       <el-form-item>
-        <el-button type="primary" @click="submitForm(ruleFormRef)">Войти</el-button>
+        <el-button type="primary" @click="submitForm(ruleFormRef)"
+          >Войти</el-button
+        >
         <el-button @click="resetForm(ruleFormRef)">Сбросить</el-button>
       </el-form-item>
+
+      <div style="text-align: center">
+        <router-link to="/">Регистрация</router-link>
+      </div>
+
+      <div></div>
     </el-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user' // Подключение Pinia
-import axios from 'axios' // Для запросов на сервер
-import type { FormProps, FormInstance, FormRules } from 'element-plus'
-import { sendUserAutoDate } from '@/service/AuthorizationService'
-import { createUserForm } from '@/utils/formData'
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user'; // Подключение Pinia
+import axios from 'axios'; // Для запросов на сервер
+import type { FormProps, FormInstance, FormRules } from 'element-plus';
+import { sendUserAutoDate } from '@/service/AuthorizationService';
+import { createUserForm } from '@/utils/formData';
+import { logingUser } from '@/service/LoginService';
 
 // Инициализация
-const userStore = useUserStore()
-const router = useRouter()
-const dataForm = createUserForm() //данные формы
+const userStore = useUserStore();
+const router = useRouter();
+const dataForm = createUserForm(); //данные формы
 
-const labelPositionAll = ref<FormProps['labelPosition']>('top')
+const labelPositionAll = ref<FormProps['labelPosition']>('top');
 
 // Валидация
 const rules = {
-  unique_email: [
+  email: [
     { required: true, message: 'Введите email адрес', trigger: 'blur' },
-    { type: 'email', message: 'Введите корректный email адрес', trigger: ['blur', 'change'] }
+    {
+      type: 'email',
+      message: 'Введите корректный email адрес',
+      trigger: ['blur', 'change']
+    }
   ],
   password: [{ required: true, message: 'Введите пароль', trigger: 'blur' }]
-}
+};
 
 // Отправка данных формы
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
+  if (!formEl) return;
   formEl.validate(async (valid) => {
     if (valid) {
       try {
-        const response = await sendUserAutoDate(dataForm)
-        console.log('Вход выполнен:', response)
-        router.push({ name: 'main' })
+        const response = await logingUser(dataForm);
+        console.log('Вход выполнен:', response);
+        router.push({ name: 'main' });
       } catch (error) {
-        console.error('Ошибка при входе:', error)
+        console.error('Ошибка при входе:', error);
       }
     } else {
-      console.log('Ошибка валидации формы')
+      console.log('Ошибка валидации формы');
     }
-  })
-}
+  });
+};
 
 // Сброс формы
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
+  if (!formEl) return;
+  formEl.resetFields();
 
-  dataForm.unique_email = ''
-  dataForm.password = ''
-}
+  dataForm.email = '';
+  dataForm.password = '';
+};
 
-const ruleFormRef = ref<FormInstance>()
+const ruleFormRef = ref<FormInstance>();
 </script>
 
 <style scoped>

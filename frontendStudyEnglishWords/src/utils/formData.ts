@@ -1,16 +1,16 @@
-import { reactive } from 'vue'
+import { reactive } from 'vue';
 
 export interface UserForm {
-  first_name: string
-  unique_email: string
-  password: string
-  checkPass?: string
+  first_name: string;
+  email: string;
+  password: string;
+  checkPass?: string;
 }
 
 export const createUserForm = () =>
   reactive<UserForm>({
     first_name: '',
-    unique_email: '',
+    email: '',
     password: '',
     checkPass: ''
-  })
+  });

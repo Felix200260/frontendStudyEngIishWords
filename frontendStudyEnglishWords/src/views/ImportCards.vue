@@ -25,9 +25,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const textarea = ref('')
+const textarea = ref('');
 </script>
 
 <style scoped></style>

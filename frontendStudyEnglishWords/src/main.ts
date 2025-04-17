@@ -1,16 +1,17 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { createRouter, createWebHistory } from 'vue-router'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import axios from 'axios'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import axiosInstance from '@/api/axios';
 
-import App from './App.vue'
-import LoginView from './views/LoginView.vue'
-import RegistrationView from './views/RegistrationView.vue'
-import MainView from '@/views/MainView.vue'
-import ImportCards from '@/views/ImportCards.vue'
-import { useUserStore } from '@/stores/user'
+
+import App from './App.vue';
+import LoginView from './views/LoginView.vue';
+import RegistrationView from './views/RegistrationView.vue';
+import MainView from '@/views/MainView.vue';
+import ImportCards from '@/views/ImportCards.vue';
+import { useUserStore } from '@/stores/user';
 
 // Проверка работы бэкенда
 // async function checkBackend(): Promise<boolean> {
@@ -31,8 +32,8 @@ async function main() {
   //   console.warn('Backend is not available. Starting app in offline mode.')
   // }
 
-  const pinia = createPinia()
-  const app = createApp(App)
+  const pinia = createPinia();
+  const app = createApp(App);
 
   const router = createRouter({
     history: createWebHistory(),
@@ -42,30 +43,34 @@ async function main() {
       { path: '/main', name: 'main', component: MainView },
       { path: '/importCards', name: 'importCards', component: ImportCards }
     ]
-  })
+  });
 
   // Глобальная проверка авторизации
   router.beforeEach((to, from, next) => {
-    const userStore = useUserStore()
-    userStore.loadUser() // Загружаем данные пользователя из localStorage //todo ?WTF
+    const userStore = useUserStore();
+    userStore.loadUser(); // Загружаем данные пользователя из localStorage //todo ?WTF
 
-    const isAuthenticated = userStore.isAuthenticated
+    const isAuthenticated = userStore.isAuthenticated;
 
     if (to.name === 'logout') {
-      userStore.logout() // Сбрасываем авторизацию
-      next({ name: 'login' }) //todo ?WTF next
-    } else if (!isAuthenticated && to.name !== 'login' && to.name !== 'registration') {
-      next({ name: 'registration' }) // Разрешаем доступ к странице регистрации
+      userStore.logout(); // Сбрасываем авторизацию
+      next({ name: 'login' }); //todo ?WTF next
+    } else if (
+      !isAuthenticated &&
+      to.name !== 'login' &&
+      to.name !== 'registration'
+    ) {
+      next({ name: 'registration' }); // Разрешаем доступ к странице регистрации
     } else {
-      next() // Разрешаем переход
+      next(); // Разрешаем переход
     }
-  })
+  });
 
-  app.use(pinia)
-  app.use(ElementPlus)
-  app.use(router)
+  app.use(pinia);
+  app.use(ElementPlus);
+  app.use(router);
 
-  app.mount('#app') // Монтируем приложение только после завершения всех проверок
+  app.mount('#app'); // Монтируем приложение только после завершения всех проверок
 }
 
-main() // Запуск приложения
+main(); // Запуск приложения

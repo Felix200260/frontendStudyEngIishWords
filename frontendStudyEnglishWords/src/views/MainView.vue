@@ -2,8 +2,8 @@
   <el-container class="layout-container-demo" style="height: 100vh">
     <el-aside width="200px">
       <el-scrollbar>
-        <!-- <el-menu> -->
-        <!-- <el-sub-menu>
+        <el-menu>
+          <el-sub-menu>
             <template #title>
               <el-icon><message /></el-icon>Колоды
             </template>
@@ -13,8 +13,8 @@
               <el-menu-item index="3">Колода 3</el-menu-item>
               <el-menu-item index="4">Колода 4</el-menu-item>
             </el-menu-item-group>
-          </el-sub-menu> -->
-        <!-- </el-menu> -->
+          </el-sub-menu>
+        </el-menu>
       </el-scrollbar>
     </el-aside>
 
@@ -42,14 +42,24 @@
           </div>
           <!--Добавить колоду-->
           <div class="addDeck">
-            <el-button type="primary" :icon="Plus" @click="dialogOpenAddDeck = true"
+            <el-button
+              type="primary"
+              :icon="Plus"
+              @click="dialogOpenAddDeck = true"
               >Добавить колоду</el-button
             >
           </div>
 
-          <el-dialog v-model="dialogOpenAddDeck" title="Добавление колоды" width="500">
+          <el-dialog
+            v-model="dialogOpenAddDeck"
+            title="Добавление колоды"
+            width="500"
+          >
             <el-form :model="form">
-              <el-form-item label="Название колоды" :label-width="formLabelWidth">
+              <el-form-item
+                label="Название колоды"
+                :label-width="formLabelWidth"
+              >
                 <el-input v-model="form.name" autocomplete="off" />
               </el-form-item>
               <el-form-item label="Категория" :label-width="formLabelWidth">
@@ -65,7 +75,11 @@
                   >
                     <template #default>
                       <div
-                        style="display: flex; justify-content: space-between; align-items: center"
+                        style="
+                          display: flex;
+                          justify-content: space-between;
+                          align-items: center;
+                        "
                       >
                         <span>{{ category.label }}</span>
                         <el-button
@@ -91,23 +105,41 @@
                 />
               </el-form-item>
               <!-- Диалог для добавления новой категории -->
-              <el-dialog v-model="dialogAddCategoryVisible" title="Добавить категорию">
+              <el-dialog
+                v-model="dialogAddCategoryVisible"
+                title="Добавить категорию"
+              >
                 <el-form>
                   <el-form-item label="Название категории">
                     <el-input v-model="newCategoryName" />
                   </el-form-item>
                 </el-form>
                 <template #footer>
-                  <el-button @click="dialogAddCategoryVisible = false">Отмена</el-button>
-                  <el-button type="primary" @click="addCategory">Добавить</el-button>
+                  <el-button @click="dialogAddCategoryVisible = false"
+                    >Отмена</el-button
+                  >
+                  <el-button type="primary" @click="addCategory"
+                    >Добавить</el-button
+                  >
                 </template>
               </el-dialog>
               <!-- Диалог для удаления категории -->
-              <el-dialog v-model="dialogDeleteCategoryVisible" title="Удалить категорию">
-                <p>Вы уверены, что хотите удалить категорию "{{ categoryToDelete?.label }}"?</p>
+              <el-dialog
+                v-model="dialogDeleteCategoryVisible"
+                title="Удалить категорию"
+              >
+                <p>
+                  Вы уверены, что хотите удалить категорию "{{
+                    categoryToDelete?.label
+                  }}"?
+                </p>
                 <template #footer>
-                  <el-button @click="dialogDeleteCategoryVisible = false">Отмена</el-button>
-                  <el-button type="danger" @click="deleteCategory">Удалить</el-button>
+                  <el-button @click="dialogDeleteCategoryVisible = false"
+                    >Отмена</el-button
+                  >
+                  <el-button type="danger" @click="deleteCategory"
+                    >Удалить</el-button
+                  >
                 </template>
               </el-dialog>
             </el-form>
@@ -115,14 +147,16 @@
             <template #footer>
               <div class="dialog-footer">
                 <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-                <el-button type="primary" @click="addDeck">Confirm</el-button>
-                <!--                //todo подключить pinia чтобы введёная информация по добавлению информации по коложе не исчезала пр  перезагрузке, а сохранялось-->
+                <el-button type="primary" @click="addDeck">Создать колоду</el-button>
               </div>
             </template>
           </el-dialog>
           <!---->
           <div class="outputFromSystem">
-            <el-icon class="" style="margin-right: 8px; margin-top: 1px; margin-left: 8px">
+            <el-icon
+              class=""
+              style="margin-right: 8px; margin-top: 1px; margin-left: 8px"
+            >
               <SwitchButton @click="logout" />
             </el-icon>
             <!--            <router-link to="/">Выйти</router-link>-->
@@ -142,15 +176,63 @@
               :span="6"
               style="margin-top: 50px"
             >
-              <el-card style="max-width: 480px">
+              <el-card
+                class="clickable-card"
+                @click="handleCardClick"
+                style="max-width: 480px"
+              >
                 <template #header>
-                  <div class="card-header">
-                    <span>{{ card.title }}</span>
+                  <div
+                    class="flex"
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <!-- Заголовок -->
+                    <div class="card-header">
+                      <span>{{ card.title }}</span>
+                    </div>
+
+                    <!-- Крестик -->
+                    <div>
+                      <button
+                        class="close-button"
+                        @click="dialogVisibleDeckModal = true"
+                      >
+                        ✖
+                      </button>
+                    </div>
                   </div>
                 </template>
-                <p class="text item">{{ card.content }}</p>
+
+                <p class="text item">{{ card.description }}</p>
                 <template #footer>Footer content</template>
               </el-card>
+
+              <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
+              <el-dialog
+                v-model="dialogVisibleDeckModal"
+                title="Предупреждение"
+                width="500"
+              >
+                <span>Вы уверены что хотите удалить колоду?</span>
+                <template #footer>
+                  <div class="dialog-footer">
+                    <el-button @click="dialogVisibleDeckModal = false"
+                      >Cancel</el-button
+                    >
+                    <el-button
+                      type="primary"
+                      @click="dialogVisibleDeckModal = false"
+                    >
+                      Confirm
+                    </el-button>
+                  </div>
+                </template>
+              </el-dialog>
+              <!--/Диалоговое окно=====================================================/-->
             </el-col>
           </el-row>
         </template>
@@ -162,8 +244,8 @@
                 <Plus />
               </el-icon>
               <p>
-                Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду", чтобы создать
-                новую.
+                Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду",
+                чтобы создать новую.
               </p>
               <el-button type="primary" @click="dialogOpenAddDeck = true">
                 Добавить колоду
@@ -185,7 +267,11 @@
           </div>
         </template>
         <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
-        <el-dialog v-model="dialogFormVisible" title="Добавить колоду" width="700">
+        <el-dialog
+          v-model="dialogFormVisible"
+          title="Добавить колоду"
+          width="700"
+        >
           <el-form :model="form">
             <el-form-item label="Название колоды" :label-width="formLabelWidth">
               <el-input v-model="form.name" autocomplete="off" />
@@ -199,14 +285,18 @@
               />
               <el-button style="margin-top: 20px" size="default">
                 <!--                @click="openWindowImportCards"-->
-                <router-link to="/importCards">Импортировать</router-link></el-button
+                <router-link to="/importCards"
+                  >Импортировать</router-link
+                ></el-button
               >
             </el-form-item>
           </el-form>
           <template #footer>
             <div class="dialog-footer">
               <el-button @click="dialogFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false"> Confirm </el-button>
+              <el-button type="primary" @click="dialogFormVisible = false">
+                Confirm
+              </el-button>
             </div>
           </template>
         </el-dialog>
@@ -216,79 +306,83 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import { SwitchButton, Message, Setting } from '@element-plus/icons-vue'
-import { onMounted } from 'vue'
-import { Edit, Plus } from '@element-plus/icons-vue'
-import Swiper from 'swiper/bundle'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import { Navigation, Pagination } from 'swiper/modules'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { computed, reactive, ref } from 'vue';
+import { SwitchButton, Message, Setting } from '@element-plus/icons-vue';
+import { onMounted } from 'vue';
+import { Edit, Plus } from '@element-plus/icons-vue';
+import Swiper from 'swiper/bundle';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { ElMessageBox } from 'element-plus';
+import { addDeckToDB } from '@/service/DeckService';
 
-const router = useRouter()
+const router = useRouter();
 
 const navigateToImportCards = () => {
   // router.push('/importCards')
-}
+};
 
 //Список категорий , тегов и прочее для сортировки колод===========================================
 const categories = ref([
   { label: 'Путешествия', value: 'travel' },
   { label: 'Работа', value: 'work' }
-])
+]);
 //===========================================
 //ологика для обработки выбора категории===========================================
-const dialogAddCategoryVisible = ref(false)
-const newCategoryName = ref('')
+const dialogAddCategoryVisible = ref(false);
+const newCategoryName = ref('');
 
 const handleCategoryChange = (value: string) => {
   if (value === 'add') {
-    dialogAddCategoryVisible.value = true
+    dialogAddCategoryVisible.value = true;
   }
-}
+};
 
 const addCategory = () => {
   if (newCategoryName.value.trim()) {
     categories.value.push({
       label: newCategoryName.value,
       value: newCategoryName.value.toLowerCase().replace(/\s+/g, '_')
-    })
-    newCategoryName.value = ''
-    dialogAddCategoryVisible.value = false
+    });
+    newCategoryName.value = '';
+    dialogAddCategoryVisible.value = false;
   }
-}
+};
 //===========================================
 //Удаление категорий===========================================
-const dialogDeleteCategoryVisible = ref(false)
-const categoryToDelete = ref<{ label: string; value: string } | null>(null)
+const dialogDeleteCategoryVisible = ref(false);
+const categoryToDelete = ref<{ label: string; value: string } | null>(null);
 
 const confirmDeleteCategory = (category: { label: string; value: string }) => {
   //подтверждения удаления
-  categoryToDelete.value = category
-  dialogDeleteCategoryVisible.value = true
-}
+  categoryToDelete.value = category;
+  dialogDeleteCategoryVisible.value = true;
+};
 
 const deleteCategory = () => {
   if (categoryToDelete.value) {
-    categories.value = categories.value.filter((cat) => cat.value !== categoryToDelete.value?.value)
-    categoryToDelete.value = null
-    dialogDeleteCategoryVisible.value = false
+    categories.value = categories.value.filter(
+      (cat) => cat.value !== categoryToDelete.value?.value
+    );
+    categoryToDelete.value = null;
+    dialogDeleteCategoryVisible.value = false;
   }
-}
+};
 
 //===========================================
 
-const dialogOpenAddDeck = ref(false)
+const dialogOpenAddDeck = ref(false);
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 const logout = () => {
-  userStore.logout() // Вызываем метод logout из Pinia
-  router.push({ name: 'login' }) // Перенаправляем на страницу логина
-}
+  userStore.logout(); // Вызываем метод logout из Pinia
+  router.push({ name: 'login' }); // Перенаправляем на страницу логина
+};
 
 // onMounted(() => {
 //   new Swiper('.mySwiper', {
@@ -305,8 +399,13 @@ const logout = () => {
 //   })
 // })
 
-const dialogFormVisible = ref(false)
-const formLabelWidth = '140px'
+const handleCardClick = () => {
+  // Обработка клика по карточке
+  console.log('Card clicked!');
+};
+
+const dialogFormVisible = ref(false);
+const formLabelWidth = '140px';
 
 const form = reactive({
   name: '',
@@ -317,7 +416,7 @@ const form = reactive({
   type: [],
   resource: '',
   desc: ''
-})
+});
 
 const gridData = [
   {
@@ -340,29 +439,31 @@ const gridData = [
     name: 'John Smith',
     address: 'No.1518,  Jinshajiang Road, Putuo District'
   }
-]
+];
 
-const textarea = ref('')
+const textarea = ref('');
 
 //Поиск====================================================================================
 interface LinkItem {
-  value: string
-  link: string
+  value: string;
+  link: string;
 }
 
-const state = ref('')
-const links = ref<LinkItem[]>([])
+const state = ref('');
+const links = ref<LinkItem[]>([]);
 
 const querySearch = (queryString: string, cb: any) => {
-  const results = queryString ? links.value.filter(createFilter(queryString)) : links.value
+  const results = queryString
+    ? links.value.filter(createFilter(queryString))
+    : links.value;
   // call callback function to return suggestion objects
-  cb(results)
-}
+  cb(results);
+};
 const createFilter = (queryString: string) => {
   return (item: LinkItem) => {
-    return item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-  }
-}
+    return item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
+  };
+};
 const loadAll = () => {
   return [
     { value: 'vue', link: 'https://github.com/vuejs/vue' },
@@ -372,62 +473,82 @@ const loadAll = () => {
     { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
     { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
     { value: 'babel', link: 'https://github.com/babel/babel' }
-  ]
-}
+  ];
+};
 const handleSelect = (item: LinkItem) => {
-  console.log(item)
-}
+  console.log(item);
+};
 
 const handleIconClick = (ev: Event) => {
-  console.log(ev)
-}
+  console.log(ev);
+};
 
 onMounted(() => {
-  links.value = loadAll()
-})
+  links.value = loadAll();
+});
 //Поиск====================================================================================
 
 const action1 = (command: string) => {
   // Замените alert на нужное вам действие
-  alert(`Клик на элемент: ${command}`)
-}
+  alert(`Клик на элемент: ${command}`);
+};
 
 const item = {
   date: '2016-05-02',
   name: 'Tom',
   address: 'No. 189, Grove St, Los Angeles'
-}
-const tableData = ref(Array.from({ length: 20 }).fill(item))
+};
+const tableData = ref(Array.from({ length: 20 }).fill(item));
 
 //Генерация колод========================================================================================
-const decks = ref<{ title: string; content: string }[]>([])
-
-const addDeck = () => {
+const decks = ref<{ title: string; description: string }[]>([]);
+const addDeck = async () => {
   if (form.name && textarea.value) {
-    decks.value.push({ title: form.name, content: textarea.value })
-    form.name = ''
-    textarea.value = ''
-    dialogFormVisible.value = false
+    const newDeck = {
+      title: form.name,
+      description: textarea.value
+    };
 
-    // Убедитесь, что total в пагинации обновлен:
-    if (currentPage.value > Math.ceil(decks.value.length / pageSize.value)) {
-      currentPage.value = Math.ceil(decks.value.length / pageSize.value)
+    try {
+      // Отправляем данные на сервер
+      const response = await addDeckToDB(newDeck);
+
+      if (response) {
+        // Обновляем локальное состояние
+        decks.value.push({ title: form.name, description: textarea.value });
+        form.name = '';
+        dialogFormVisible.value = false;
+
+        // Убедитесь, что total в пагинации обновлен
+        if (
+          currentPage.value > Math.ceil(decks.value.length / pageSize.value)
+        ) {
+          currentPage.value = Math.ceil(decks.value.length / pageSize.value);
+        }
+      } else {
+        console.error('Ошибка при добавлении колоды:', response);
+      }
+    } catch (error) {
+      console.error('Ошибка при добавлении колоды:', error);
     }
   }
-}
+};
 
 //Генерация колод========================================================================================
 //Пагинация========================================================================================
-const currentPage = ref(1) // Текущая страница
-const pageSize = ref(2) // Количество колод на странице
+const currentPage = ref(1); // Текущая страница
+const pageSize = ref(2); // Количество колод на странице
 
 const paginatedDecks = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return decks.value.slice(start, end)
-})
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return decks.value.slice(start, end);
+});
 
 //Пагинация========================================================================================
+//Удаление колод========================================================================================
+const dialogVisibleDeckModal = ref(false);
+//Удаление колод========================================================================================
 </script>
 
 <style scoped>
@@ -500,5 +621,9 @@ const paginatedDecks = computed(() => {
 }
 
 .zaglushka {
+}
+
+.clickable-card {
+  cursor: pointer;
 }
 </style>

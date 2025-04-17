@@ -1,8 +1,18 @@
 {
+  "_comments": {
+    "$schema": "Ссылка на схему JSON для Prettier",
+    "semi": "Добавлять точки с запятой в конце строк (true - включено, false - отключено)",
+    "tabWidth": "Количество пробелов для отступов",
+    "singleQuote": "Использовать одинарные кавычки вместо двойных",
+    "printWidth": "Максимальная длина строки, после которой код будет переноситься",
+    "trailingComma": "Запятая после последнего элемента (none, es5, all)",
+    "bracketSpacing": "Добавлять пробелы внутри фигурных скобок"
+  },
   "$schema": "https://json.schemastore.org/prettierrc",
-  "semi": false,
+  "semi": true,
   "tabWidth": 2,
   "singleQuote": true,
-  "printWidth": 100,
-  "trailingComma": "none"
+  "printWidth": 80,
+  "trailingComma": "none",
+  "bracketSpacing": true
 }

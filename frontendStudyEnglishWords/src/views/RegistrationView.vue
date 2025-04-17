@@ -18,7 +18,7 @@
       </el-form-item>
 
       <!-- Поле для email -->
-      <el-form-item
+      <!-- <el-form-item
         prop="unique_email"
         label="Email"
         :rules="[
@@ -33,23 +33,33 @@
             trigger: ['blur', 'change']
           }
         ]"
-      >
-        <el-input v-model="dataForm.unique_email" />
-      </el-form-item>
+      > -->
+      <el-input v-model="dataForm.unique_email" />
+      <!-- </el-form-item> -->
 
       <!-- Поле для пароля -->
       <el-form-item label="Пароль" prop="pass">
-        <el-input v-model="dataForm.password" type="password" autocomplete="off" />
+        <el-input
+          v-model="dataForm.password"
+          type="password"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <!-- Поле для подтверждения пароля -->
       <el-form-item label="Подтвердите пароль" prop="checkPass">
-        <el-input v-model="dataForm.checkPass" type="password" autocomplete="off" />
+        <el-input
+          v-model="dataForm.checkPass"
+          type="password"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <!-- Кнопки отправки и сброса -->
       <el-form-item>
-        <el-button type="primary" @click="submitForm(ruleFormRef)"> Зарегистрироваться </el-button>
+        <el-button type="primary" @click="submitForm(ruleFormRef)">
+          Зарегистрироваться
+        </el-button>
         <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
       </el-form-item>
 
@@ -61,20 +71,20 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import type { FormProps, FormInstance, FormRules } from 'element-plus'
-import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router' //добавил для возможности по нажатию кнопки переходить по route
-import { sendUserAutoDate } from '@/service/AuthorizationService'
+import { reactive, ref } from 'vue';
+import type { FormProps, FormInstance, FormRules } from 'element-plus';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router'; //добавил для возможности по нажатию кнопки переходить по route
+import { sendUserAutoDate } from '@/service/AuthorizationService';
 
-const labelPositionAll = ref<FormProps['labelPosition']>('top')
+const labelPositionAll = ref<FormProps['labelPosition']>('top');
 
-const router = useRouter() //добавил для возможности по нажатию кнопки переходить по route
-const userStore = useUserStore()
-userStore.loadUser()
+const router = useRouter(); //добавил для возможности по нажатию кнопки переходить по route
+const userStore = useUserStore();
+userStore.loadUser();
 
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
+  if (!formEl) return;
   formEl.validate(async (valid) => {
     if (valid) {
       // сохраняю в хранилище
@@ -82,63 +92,63 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         first_name: dataForm.first_name,
         unique_email: dataForm.unique_email,
         password: dataForm.password
-      })
-      router.push({ name: 'main' }) //todo ?WTF
+      });
+      router.push({ name: 'main' }); //todo ?WTF
       // console.log('Pinia', userStore.name, userStore.email)
       try {
         await sendUserAutoDate({
           first_name: dataForm.first_name, // Маппинг на first_name
-          unique_email: dataForm.unique_email, // Маппинг на unique_email
+          email: dataForm.unique_email, // Маппинг на unique_email
           password: dataForm.password // Маппинг на password
-        })
-        router.push({ name: 'main' })
+        });
+        router.push({ name: 'main' });
       } catch (error) {
-        console.error('Ошибка при отправке данных:', error)
+        console.error('Ошибка при отправке данных:', error);
       }
     } else {
-      console.log('error submit!')
+      console.log('error submit!');
     }
-  })
-}
+  });
+};
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return //todo ?WTF
-  formEl.resetFields()
+  if (!formEl) return; //todo ?WTF
+  formEl.resetFields();
   //Вручную удаляю
-  dataForm.first_name = ''
-  dataForm.unique_email = ''
-  dataForm.password = ''
-  dataForm.checkPass = ''
-}
+  dataForm.first_name = '';
+  dataForm.unique_email = '';
+  dataForm.password = '';
+  dataForm.checkPass = '';
+};
 
-const ruleFormRef = ref<FormInstance>() //todo ?WTF
+const ruleFormRef = ref<FormInstance>(); //todo ?WTF
 
 const messageValidate = (rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('Введите пароль'))
+    callback(new Error('Введите пароль'));
   } else {
     if (dataForm.checkPass !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value.validateField('checkPass')
+      if (!ruleFormRef.value) return;
+      ruleFormRef.value.validateField('checkPass');
     }
-    callback()
+    callback();
   }
-}
+};
 const messageValidate2 = (rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('Введите пароль ещё раз'))
+    callback(new Error('Введите пароль ещё раз'));
   } else if (value !== dataForm.password) {
-    callback(new Error('Пароли не совпадают!'))
+    callback(new Error('Пароли не совпадают!'));
   } else {
-    callback()
+    callback();
   }
-}
+};
 
 interface UserForm {
-  first_name: string
-  unique_email: string
-  password: string
-  checkPass: string
+  first_name: string;
+  unique_email: string;
+  password: string;
+  checkPass: string;
 }
 
 const dataForm = reactive<UserForm>({
@@ -146,12 +156,12 @@ const dataForm = reactive<UserForm>({
   unique_email: '',
   password: '',
   checkPass: ''
-})
+});
 
 const rules = reactive<FormRules<UserForm>>({
   password: [{ required: true, validator: messageValidate, trigger: 'blur' }], //todo ?WTF
   checkPass: [{ required: true, validator: messageValidate2, trigger: 'blur' }]
-})
+});
 </script>
 
 <style scoped>

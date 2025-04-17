@@ -1,19 +1,21 @@
-import axios from 'axios'
+import axiosInstance from '@/api/axios';
 
 export async function sendUserAutoDate(dataForm: {
-  first_name: string
-  unique_email: string
-  password: string
+  first_name: string;
+  email: string;
+  password: string;
 }) {
   try {
-    const response = await axios.post('/api/user/register', {
+    const response = await axiosInstance.post('/api/user/register', {
       first_name: dataForm.first_name,
-      unique_email: dataForm.unique_email,
-      password: dataForm.password // Название полей должно совпадать с ожидаемыми на сервере
-    })
+      unique_email: dataForm.email,
+      password: dataForm.password
+    });
 
-    console.log('Успешно отправлено:', response.data)
+    console.log('Успешно отправлено:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('Ошибка при отправке данных:', error)
+    console.error('Ошибка при отправке данных:', error);
+    throw error;
   }
 }
