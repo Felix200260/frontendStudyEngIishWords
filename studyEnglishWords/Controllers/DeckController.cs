@@ -28,7 +28,7 @@ namespace studyEnglishWords.Controllers
         public async Task<IActionResult> AddDeck([FromBody] Deck deck)
         {
             var createdDeck = await _deckService.AddDeckAsync(deck);
-            return Ok(new { message = "Deck created successfully", deckId = createdDeck.Id });
+            return Ok(new { message = "Колода создана успешно", deckId = createdDeck.Id });
         }
 
         // Удаление колоды

@@ -1,6 +1,7 @@
 export class DeckDto {
-  deckId!: number;
-  deckName!: string;
+  userId!: number;
+  title!: string;
+  description?: string;
 
   constructor(init?: Partial<DeckDto>) {
     Object.assign(this, init);

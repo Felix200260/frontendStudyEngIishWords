@@ -30,7 +30,14 @@ builder.Logging.AddConsole(); // Логирование в консоль
 builder.Logging.AddDebug();   // Логирование в отладчик (Debug)
 
 // Добавляем контроллеры и представления
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Настройка для поддержки camelCase при сериализации/десериализации
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    }
+);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
         .EnableSensitiveDataLogging() // для логирование БД

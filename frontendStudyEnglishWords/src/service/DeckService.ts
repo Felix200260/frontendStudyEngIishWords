@@ -1,6 +1,6 @@
 import axiosInstance from '@/api/axios';
 import { DeckDto } from '@/models/DescDto';
-const prefix = '/api/Decks';
+const prefix = '/api/Deck';
 
 // Получение списка всех колод
 export const getDecks = async (): Promise<DeckDto[]> => {
@@ -9,10 +9,17 @@ export const getDecks = async (): Promise<DeckDto[]> => {
 };
 
 // Добавление новой колоды
-export const addDeckToDB = async (newDeck: { title: string; description: string }): Promise<{ title: string; description: string }> => {
-  const { data } = await axiosInstance.post<{ title: string; description: string }>(`${prefix}`, newDeck);
+export const addDeckToDB = async (
+  newDeck: { title: string; description: string }
+): Promise<{ userId: number; title: string; description: string }> => {
+  const { data } = await axiosInstance.post<{ userId: number; title: string; description: string }>(
+    `${prefix}`,
+    newDeck
+  );
   return data;
-}
+};
+
+
 
 // Удаление колоды
 export const deleteDeck = async (

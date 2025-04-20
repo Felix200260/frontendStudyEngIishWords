@@ -505,6 +505,7 @@ const decks = ref<{ title: string; description: string }[]>([]);
 const addDeck = async () => {
   if (form.name && textarea.value) {
     const newDeck = {
+      userId: userStore.id,
       title: form.name,
       description: textarea.value
     };
@@ -525,6 +526,7 @@ const addDeck = async () => {
         ) {
           currentPage.value = Math.ceil(decks.value.length / pageSize.value);
         }
+        dialogOpenAddDeck.value = false;
       } else {
         console.error('Ошибка при добавлении колоды:', response);
       }

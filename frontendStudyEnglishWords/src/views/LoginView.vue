@@ -65,7 +65,6 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user'; // Подключение Pinia
 import axios from 'axios'; // Для запросов на сервер
 import type { FormProps, FormInstance, FormRules } from 'element-plus';
-import { sendUserAutoDate } from '@/service/AuthorizationService';
 import { createUserForm } from '@/utils/formData';
 import { logingUser } from '@/service/LoginService';
 
