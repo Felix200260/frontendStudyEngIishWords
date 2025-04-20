@@ -35,6 +35,8 @@
         ]"
       > -->
       <el-input v-model="dataForm.unique_email" />
+      <el-alert v-if="emailError" title="Пользователь с таким email уже существует" type="error" />
+
       <!-- </el-form-item> -->
 
       <!-- Поле для пароля -->
@@ -78,6 +80,7 @@ import { useRouter } from 'vue-router'; //добавил для возможно
 import { sendUserAutoDate } from '@/service/AuthorizationService';
 
 const labelPositionAll = ref<FormProps['labelPosition']>('top');
+const emailError = ref('');
 
 const router = useRouter(); //добавил для возможности по нажатию кнопки переходить по route
 const userStore = useUserStore();
@@ -85,31 +88,34 @@ userStore.loadUser();
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
+  emailError.value = ''; // сбрасываем ошибку перед отправкой
   formEl.validate(async (valid) => {
     if (valid) {
-      // сохраняю в хранилище
       userStore.setUser({
         first_name: dataForm.first_name,
         unique_email: dataForm.unique_email,
         password: dataForm.password
       });
-      // router.push({ name: 'main' }); //todo ?WTF
-      // console.log('Pinia', userStore.name, userStore.email)
       try {
         await sendUserAutoDate({
-          first_name: dataForm.first_name, // Маппинг на first_name
-          email: dataForm.unique_email, // Маппинг на unique_email
-          password: dataForm.password // Маппинг на password
+          first_name: dataForm.first_name,
+          unique_email: dataForm.unique_email,
+          password: dataForm.password
         });
         router.push({ name: 'main' });
-      } catch (error) {
-        console.error('Ошибка при отправке данных:', error);
+      } catch (error: any) {
+        if (error.response && error.response.status === 409) {
+          emailError.value = error.response.data.message;
+        } else {
+          emailError.value = 'Произошла ошибка при регистрации';
+        }
       }
     } else {
       console.log('error submit!');
     }
   });
 };
+
 
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return; //todo ?WTF
