@@ -96,6 +96,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       try {
         const response = await logingUser(dataForm);
+        userStore.isAuthenticated = true;
         console.log('Вход выполнен:', response);
         router.push({ name: 'main' });
       } catch (error) {

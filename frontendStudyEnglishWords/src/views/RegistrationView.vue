@@ -93,7 +93,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         unique_email: dataForm.unique_email,
         password: dataForm.password
       });
-      router.push({ name: 'main' }); //todo ?WTF
+      // router.push({ name: 'main' }); //todo ?WTF
       // console.log('Pinia', userStore.name, userStore.email)
       try {
         await sendUserAutoDate({
