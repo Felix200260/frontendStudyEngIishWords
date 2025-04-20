@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using studyEnglishWords.Dto;
 using studyEnglishWords.Models;
 using studyEnglishWords.Service;
@@ -18,17 +19,32 @@ namespace studyEnglishWords.Controllers
             _userService = userService; // Подключаем сервис
         }
 
-        [HttpPost("register")] // POST-запрос для регистрации
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            await _userService.AddUserAsync(userDto);
-            return Ok(new { message = "Пользователь успешно зарегистрирован" });
+            try
+            {
+                await _userService.AddUserAsync(userDto);
+                return Ok(new { message = "Пользователь успешно зарегистрирован" });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // проверка на уникальности email
+                if (dbEx.InnerException != null && dbEx.InnerException.Message.Contains("users_unique_email_key"))
+                {
+                    return Conflict(new { message = "Пользователь с таким email уже существует" }); //Conflict вернёт ошибку 409 где на фронте есть обработка этого. 409 - ошибка валидации
+                }
+                return StatusCode(500, new { message = "Ошибка базы данных" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Внутренняя ошибка сервера" });
+            }
         }
+
 
         
         [HttpPost("login")]

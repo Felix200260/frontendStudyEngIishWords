@@ -19,13 +19,21 @@ namespace studyEnglishWords.Service
             {
                 FirstName = userDto.firstName,
                 UniqueEmail = userDto.uniqueEmail,
-                Password = userDto.password // TODO: Узнать, как кэшировать пароль
+                Password = userDto.password
             };
 
             // Добавляем пользователя в базу данных
             _context.Users.Add(user);
             Console.WriteLine($"Добавление пользователя: {user.FirstName}, {user.UniqueEmail}");
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Данный пользователь с данной почтой уже зарегистрирован. Введите другую почту.");
+                throw;
+            }
         }
         
         public UserModal GetById(int id)
