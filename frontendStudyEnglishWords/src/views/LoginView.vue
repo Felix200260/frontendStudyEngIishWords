@@ -66,7 +66,7 @@ import { useUserStore } from '@/stores/user'; // Подключение Pinia
 import axios from 'axios'; // Для запросов на сервер
 import type { FormProps, FormInstance, FormRules } from 'element-plus';
 import { createUserForm } from '@/utils/formData';
-import { logingUser } from '@/service/LoginService';
+import { LogingUser } from '@/service/LoginService';
 
 // Инициализация
 const userStore = useUserStore();
@@ -94,7 +94,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       try {
-        const response = await logingUser(dataForm);
+        const response = await LogingUser(dataForm);
         userStore.isAuthenticated = true;
         console.log('Вход выполнен:', response);
         router.push({ name: 'main' });
