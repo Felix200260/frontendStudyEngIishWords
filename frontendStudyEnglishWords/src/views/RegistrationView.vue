@@ -91,30 +91,30 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   emailError.value = ''; // сбрасываем ошибку перед отправкой
   formEl.validate(async (valid) => {
     if (valid) {
-      userStore.setUser({
-        first_name: dataForm.first_name,
-        unique_email: dataForm.unique_email,
-        password: dataForm.password
-      });
       try {
+        // Отправляем данные на сервер
         await sendUserAutoDate({
           first_name: dataForm.first_name,
           unique_email: dataForm.unique_email,
           password: dataForm.password
         });
+
+        // Устанавливаем пользователя без id
+        userStore.setUser({
+          id: 0,
+          first_name: dataForm.first_name,
+          unique_email: dataForm.unique_email,
+          password: dataForm.password
+        });
+
         router.push({ name: 'main' });
       } catch (error: any) {
-        if (error.response && error.response.status === 409) {
-          emailError.value = error.response.data.message;
-        } else {
-          emailError.value = 'Произошла ошибка при регистрации';
-        }
+        // Обработка ошибок
       }
-    } else {
-      console.log('error submit!');
     }
   });
 };
+
 
 
 const resetForm = (formEl: FormInstance | undefined) => {
