@@ -1,4 +1,5 @@
 <template>
+  <div style="color: crimson">Вот они, изменения</div>
   <div class="form">
     <el-form
       ref="ruleFormRef"
