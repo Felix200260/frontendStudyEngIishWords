@@ -6,7 +6,7 @@ export async function sendUserAutoDate(dataForm: {
   password: string;
 }) {
   try {
-    const response = await axiosInstance.post('/api/user/register', {
+    const response = await axiosInstance.post('/user/register', {
       first_name: dataForm.first_name,
       unique_email: dataForm.unique_email,
       password: dataForm.password

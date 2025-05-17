@@ -110,7 +110,12 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
         router.push({ name: 'main' });
       } catch (error: any) {
-        // Обработка ошибок
+        // Если это ошибка 409 (email уже существует)
+        if (error.response && error.response.status === 409) {
+          emailError.value = 'Пользователь с таким email уже существует';
+        } else {
+          emailError.value = 'Произошла ошибка регистрации';
+        }
       }
     }
   });

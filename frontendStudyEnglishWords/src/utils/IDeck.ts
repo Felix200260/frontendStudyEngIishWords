@@ -1,4 +1,6 @@
 export interface Deck {
-  userId: number; // ID пользователя
-  deckName: string; // Название колоды
+  id?: number;
+  userId: number;
+  title: string;
+  description?: string;
 }

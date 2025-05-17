@@ -2,11 +2,14 @@ import axiosInstance from '@/api/axios';
 import { DeckDto } from '@/models/DescDto';
 const prefix = '/api/Deck';
 
-// Получение списка всех колод
-export const getDecks = async (): Promise<DeckDto[]> => {
-  const { data } = await axiosInstance.get<DeckDto[]>(`${prefix}`);
+// Получение колод пользователя
+// Получение колод пользователя
+export const getUserDecks = async (userId: number): Promise<DeckDto[]> => {
+  const { data } = await axiosInstance.get<DeckDto[]>(`${prefix}?userId=${userId}`);
   return data.map((deck) => new DeckDto(deck));
 };
+
+
 
 // Добавление новой колоды
 export const addDeckToDB = async (

@@ -10,12 +10,12 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     setUser(data: {
-      id: number;
+      id?: number;
       first_name: string;
       unique_email: string;
       password: string;
     }) {
-      this.id = data.id;
+      this.id = data.id || null;
       this.name = data.first_name;
       this.email = data.unique_email;
       this.pass = data.password;

@@ -7,14 +7,20 @@
             <template #title>
               <el-icon><message /></el-icon>Колоды
             </template>
+
             <el-menu-item-group>
-              <el-menu-item index="1">Колода 1</el-menu-item>
-              <el-menu-item index="2">Колода 2</el-menu-item>
-              <el-menu-item index="3">Колода 3</el-menu-item>
-              <el-menu-item index="4">Колода 4</el-menu-item>
+              <el-menu-item
+                v-for="(deck, index) in decks"
+                :key="deck.id ?? index"
+                :index="String(index + 1)"
+              >
+                {{ deck.title }}
+              </el-menu-item>
             </el-menu-item-group>
+
           </el-sub-menu>
         </el-menu>
+
       </el-scrollbar>
     </el-aside>
 
@@ -84,7 +90,7 @@
                         <span>{{ category.label }}</span>
                         <el-button
                           type="text"
-                          size="mini"
+                          size="small"
                           @click.stop="confirmDeleteCategory(category)"
                         >
                           Удалить
@@ -154,13 +160,18 @@
           <!---->
           <div class="outputFromSystem">
             <el-icon
-              class=""
-              style="margin-right: 8px; margin-top: 1px; margin-left: 8px"
+              style="margin-right: 8px; margin-top: 1px; margin-left: 8px; color: black; cursor: pointer; font-size: 15px"
             >
               <SwitchButton @click="logout" />
             </el-icon>
-            <!--            <router-link to="/">Выйти</router-link>-->
-            <button @click="logout">Выйти</button>
+          </div>
+          <div class="profile">
+            <el-icon
+              style="margin-right: 8px; margin-top: 1px; margin-left: 8px; color: black; cursor: pointer; font-size: 15px"
+            >
+              <UserFilled />
+            </el-icon>
+            <span>{{userStore.email}}</span>
           </div>
         </div>
       </el-header>
@@ -307,7 +318,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import { SwitchButton, Message, Setting } from '@element-plus/icons-vue';
+import { SwitchButton, UserFilled, Message, Setting } from '@element-plus/icons-vue';
 import { onMounted } from 'vue';
 import { Edit, Plus } from '@element-plus/icons-vue';
 import Swiper from 'swiper/bundle';
@@ -318,7 +329,8 @@ import { Navigation, Pagination } from 'swiper/modules';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { ElMessageBox } from 'element-plus';
-import { addDeckToDB } from '@/service/DeckService';
+import { addDeckToDB, getUserDecks } from '@/service/DeckService';
+import type { Deck } from '@/utils/IDeck';
 
 const router = useRouter();
 
@@ -501,7 +513,7 @@ const item = {
 const tableData = ref(Array.from({ length: 20 }).fill(item));
 
 //Генерация колод========================================================================================
-const decks = ref<{ title: string; description: string }[]>([]);
+const decks = ref<Deck[]>([]);
 const addDeck = async () => {
   if (form.name && textarea.value) {
     const newDeck = {
@@ -511,19 +523,15 @@ const addDeck = async () => {
     };
 
     try {
-      // Отправляем данные на сервер
       const response = await addDeckToDB(newDeck);
 
       if (response) {
-        // Обновляем локальное состояние
-        decks.value.push({ title: form.name, description: textarea.value });
+        // Добавляем в массив объект с нужными полями
+        decks.value.push(response);
         form.name = '';
-        dialogFormVisible.value = false;
+        textarea.value = '';
 
-        // Убедитесь, что total в пагинации обновлен
-        if (
-          currentPage.value > Math.ceil(decks.value.length / pageSize.value)
-        ) {
+        if (currentPage.value > Math.ceil(decks.value.length / pageSize.value)) {
           currentPage.value = Math.ceil(decks.value.length / pageSize.value);
         }
         dialogOpenAddDeck.value = false;
@@ -535,6 +543,7 @@ const addDeck = async () => {
     }
   }
 };
+
 
 //Генерация колод========================================================================================
 //Пагинация========================================================================================
@@ -551,6 +560,30 @@ const paginatedDecks = computed(() => {
 //Удаление колод========================================================================================
 const dialogVisibleDeckModal = ref(false);
 //Удаление колод========================================================================================
+//Получение колод пользователя========================================================================================
+const loadUserDecks = async () => {
+  try {
+    if (userStore.id === null) {
+      console.error('ID пользователя не определен');
+      return;
+    }
+
+    const userDecks = await getUserDecks(userStore.id);
+    decks.value = userDecks;
+    console.log('Загружены колоды:', decks.value);
+  } catch (error) {
+    console.error('Ошибка при загрузке колод:', error);
+  }
+};
+
+
+
+// Вызывай функцию при монтировании компонента
+onMounted(() => {
+  loadUserDecks();
+});
+
+//Получение колод пользователя========================================================================================
 </script>
 
 <style scoped>
