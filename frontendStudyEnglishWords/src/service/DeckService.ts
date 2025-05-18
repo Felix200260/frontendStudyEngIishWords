@@ -31,12 +31,10 @@ export const addDeckToDB = async (
 
 // Удаление колоды
 export const deleteDeck = async (
-  deckId: number
-): Promise<{ message: string }> => {
-  const { data } = await axiosInstance.delete<{ message: string }>(
-    `${prefix}/${deckId}`
-  );
-  return data;
+  deckId: number | undefined
+): Promise<{ deckId: number }> => {
+  const { data } = await axiosInstance.delete<{ deckId: number }>(`${prefix}/${deckId}`);
+  return data ;
 };
 
 //Обновление колод
