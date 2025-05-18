@@ -69,37 +69,43 @@
                 <el-input v-model="form.name" autocomplete="off" />
               </el-form-item>
               <el-form-item label="Категория" :label-width="formLabelWidth">
-                <el-select
-                  v-model="form.region"
-                  placeholder="Выбрать"
-                  @change="handleCategoryChange"
-                >
-                  <el-option
-                    v-for="category in categories"
-                    :key="category.value"
-                    :value="category.value"
+                <div class="m-4">
+                  <el-select
+                    v-model="form.categories"
+                    multiple
+                    placeholder="Выбрать"
+                    style="width: 240px"
                   >
-                    <template #default>
-                      <div
-                        style="
-                          display: flex;
-                          justify-content: space-between;
-                          align-items: center;
-                        "
-                      >
-                        <span>{{ category.label }}</span>
-                        <el-button
-                          type="text"
-                          size="small"
-                          @click.stop="confirmDeleteCategory(category)"
-                        >
-                          Удалить
-                        </el-button>
-                      </div>
-                    </template>
-                  </el-option>
-                  <el-option label="+ Добавить" value="add" />
-                </el-select>
+                    <el-option
+                      v-for="category in categories"
+                      :key="category.value"
+                      :label="category.label"
+                      :value="category.value"
+                    >
+                      <template #default>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                          <span>{{ category.label }}</span>
+                          <el-button
+                            type="text"
+                            size="small"
+                            @click.stop="confirmDeleteCategory(category)"
+                          >
+                            Удалить
+                          </el-button>
+                        </div>
+                      </template>
+                    </el-option>
+                    <el-button style="display: flex; justify-content: center; align-items: center; margin: 10px; " :label="`Добавить`" @click="handleCategoryChange('add')">
+                      <template #default>
+                        <span style="color: #409eff; font-weight: bold;">
+                          <el-icon style="vertical-align: middle; margin-right: 4px;"><Plus /></el-icon>
+                          Добавить
+                        </span>
+                      </template>
+                    </el-button>
+                  </el-select>
+                </div>
+
               </el-form-item>
               <el-form-item label="Описание" :label-width="formLabelWidth">
                 <el-input
@@ -176,142 +182,158 @@
         </div>
       </el-header>
 
-      <el-main style="height: calc(100vh - 50px)">
-        <template v-if="decks.length">
-          <div>{{ decks.length }}</div>
-          <!-- Список колод -->
-          <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
-            <el-col
-              v-for="(card, index) in paginatedDecks"
-              :key="index"
-              :span="6"
-              style="margin-top: 50px"
-            >
-              <el-card
-                class="clickable-card"
-                @click="handleCardClick"
-                style="max-width: 480px"
+      <el-scrollbar style="height: calc(100vh - 50px)" class="scrollbar-demo-item">
+        <el-main>
+          <template v-if="decks.length">
+            <div>Вы создали вот столько колод: {{ decks.length }}</div>
+            <!-- Список колод -->
+            <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
+              <el-col
+                v-for="(card, index) in decks"
+                :key="index"
+                :span="6"
+                style="margin-top: 50px"
               >
-                <template #header>
-                  <div
-                    class="flex"
-                    style="
+                <el-card
+                  class="clickable-card"
+                  @click="handleCardClick"
+                  style="max-width: 480px"
+                >
+                  <template #header>
+                    <div
+                      class="flex"
+                      style="
                       display: flex;
                       justify-content: space-between;
                       align-items: center;
                     "
-                  >
-                    <!-- Заголовок -->
-                    <div class="card-header">
-                      <span>{{ card.title }}</span>
-                    </div>
+                    >
+                      <!-- Заголовок -->
+                      <div class="card-header">
+                        <span>{{ card.title }}</span>
+                      </div>
 
-                    <!-- Крестик -->
-                    <div>
-                      <button
-                        class="close-button"
-                        @click="dialogVisibleDeckModal = true"
+                      <!-- Крестик -->
+                      <div>
+                        <button
+                          class="close-button"
+                          @click="dialogVisibleDeckModal = true"
+                        >
+                          ✖
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+
+                  <div>
+                    <div style="margin: 10px">{{ card.description }}</div>
+                  </div>
+
+                  <template #footer>
+                    <div style="margin: 10px" class="flex gap-2">
+                      <el-tag type="primary">Tag 1</el-tag>
+                      <el-tag type="success">Tag 2</el-tag>
+                      <el-tag type="info">Tag 3</el-tag>
+                      <el-tag type="warning">Tag 4</el-tag>
+                      <el-tag type="danger">Tag 5</el-tag>
+                    </div>
+                  </template>
+                </el-card>
+
+                <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
+                <el-dialog
+                  v-model="dialogVisibleDeckModal"
+                  title="Предупреждение"
+                  width="500"
+                >
+                  <span>Вы уверены что хотите удалить колоду?</span>
+                  <template #footer>
+                    <div class="dialog-footer">
+                      <el-button @click="dialogVisibleDeckModal = false"
+                      >Cancel
+                      </el-button
                       >
-                        ✖
-                      </button>
+                      <el-button
+                        type="primary"
+                        @click="dialogVisibleDeckModal = false"
+                      >
+                        Confirm
+                      </el-button>
                     </div>
-                  </div>
-                </template>
-
-                <p class="text item">{{ card.description }}</p>
-                <template #footer>Footer content</template>
-              </el-card>
-
-              <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
-              <el-dialog
-                v-model="dialogVisibleDeckModal"
-                title="Предупреждение"
-                width="500"
-              >
-                <span>Вы уверены что хотите удалить колоду?</span>
-                <template #footer>
-                  <div class="dialog-footer">
-                    <el-button @click="dialogVisibleDeckModal = false"
-                      >Cancel</el-button
-                    >
-                    <el-button
-                      type="primary"
-                      @click="dialogVisibleDeckModal = false"
-                    >
-                      Confirm
-                    </el-button>
-                  </div>
-                </template>
-              </el-dialog>
-              <!--/Диалоговое окно=====================================================/-->
-            </el-col>
-          </el-row>
-        </template>
-        <template v-else>
-          <!-- Заглушка при отсутствии карточек -->
-          <div class="empty-placeholder">
-            <div class="zaglushka" style="flex-grow: 1">
-              <el-icon>
-                <Plus />
-              </el-icon>
-              <p>
-                Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду",
-                чтобы создать новую.
-              </p>
-              <el-button type="primary" @click="dialogOpenAddDeck = true">
-                Добавить колоду
-              </el-button>
-            </div>
-            <!--Пагинация-->
-            <div class="footerForZaglushka">
-              <el-pagination
-                :current-page="currentPage"
-                :page-size="pageSize"
-                :total="decks.length"
-                class="pagination"
-                default-page-size="1"
-                layout="prev, pager, next"
-                background
-                @current-change="currentPage = $event"
-              />
-            </div>
-          </div>
-        </template>
-        <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
-        <el-dialog
-          v-model="dialogFormVisible"
-          title="Добавить колоду"
-          width="700"
-        >
-          <el-form :model="form">
-            <el-form-item label="Название колоды" :label-width="formLabelWidth">
-              <el-input v-model="form.name" autocomplete="off" />
-            </el-form-item>
-            <el-form-item :label-width="formLabelWidth">
-              <el-input
-                v-model="textarea"
-                :autosize="{ minRows: 2, maxRows: 4 }"
-                type="textarea"
-                placeholder="Please input"
-              />
-              <el-button style="margin-top: 20px" size="default">
-                <!--                @click="openWindowImportCards"-->
-                <router-link to="/importCards"
-                  >Импортировать</router-link
-                ></el-button
-              >
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <div class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false">
-                Confirm
-              </el-button>
+                  </template>
+                </el-dialog>
+                <!--/Диалоговое окно=====================================================/-->
+              </el-col>
+            </el-row>
+          </template>
+          <template v-else>
+            <!-- Заглушка при отсутствии карточек -->
+            <div class="empty-placeholder">
+              <div class="zaglushka" style="flex-grow: 1">
+                <el-icon>
+                  <Plus />
+                </el-icon>
+                <p>
+                  Здесь будут отображаться ваши колоды. Нажмите "Добавить колоду",
+                  чтобы создать новую.
+                </p>
+                <el-button type="primary" @click="dialogOpenAddDeck = true">
+                  Добавить колоду
+                </el-button>
+              </div>
+              <!--Пагинация-->
+              <div class="footerForZaglushka">
+                <el-pagination
+                  :current-page="currentPage"
+                  :page-size="pageSize"
+                  :total="decks.length"
+                  class="pagination"
+                  default-page-size="1"
+                  layout="prev, pager, next"
+                  background
+                  @current-change="currentPage = $event"
+                />
+              </div>
             </div>
           </template>
-        </el-dialog>
-      </el-main>
+          <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
+          <el-dialog
+            v-model="dialogFormVisible"
+            title="Добавить колоду"
+            width="700"
+          >
+            <el-form :model="form">
+              <el-form-item label="Название колоды" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item :label-width="formLabelWidth">
+                <el-input
+                  v-model="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4 }"
+                  type="textarea"
+                  placeholder="Please input"
+                />
+                <el-button style="margin-top: 20px" size="default">
+                  <!--                @click="openWindowImportCards"-->
+                  <router-link to="/importCards"
+                  >Импортировать
+                  </router-link
+                  >
+                </el-button
+                >
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false">
+                  Confirm
+                </el-button>
+              </div>
+            </template>
+          </el-dialog>
+        </el-main>
+      </el-scrollbar>
     </el-container>
   </el-container>
 </template>
@@ -349,6 +371,7 @@ const dialogAddCategoryVisible = ref(false);
 const newCategoryName = ref('');
 
 const handleCategoryChange = (value: string) => {
+  dialogAddCategoryVisible.value = false;
   if (value === 'add') {
     dialogAddCategoryVisible.value = true;
   }
@@ -360,6 +383,8 @@ const addCategory = () => {
       label: newCategoryName.value,
       value: newCategoryName.value.toLowerCase().replace(/\s+/g, '_')
     });
+    // const response = await addCategory();
+    //todo добавть добавление колоды
     newCategoryName.value = '';
     dialogAddCategoryVisible.value = false;
   }
@@ -421,7 +446,7 @@ const formLabelWidth = '140px';
 
 const form = reactive({
   name: '',
-  region: '',
+  categories: '',
   date1: '',
   date2: '',
   delivery: false,
@@ -429,29 +454,6 @@ const form = reactive({
   resource: '',
   desc: ''
 });
-
-const gridData = [
-  {
-    date: '2016-05-02',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District'
-  },
-  {
-    date: '2016-05-04',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District'
-  },
-  {
-    date: '2016-05-01',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District'
-  },
-  {
-    date: '2016-05-03',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District'
-  }
-];
 
 const textarea = ref('');
 
@@ -516,20 +518,24 @@ const tableData = ref(Array.from({ length: 20 }).fill(item));
 const decks = ref<Deck[]>([]);
 const addDeck = async () => {
   if (form.name && textarea.value) {
+    const now = new Date().toISOString();
+
     const newDeck = {
-      userId: userStore.id,
+      userId: userStore.id ?? 1, // если нет userStore.id, то 1
+      categories: [form.categories],
       title: form.name,
-      description: textarea.value
+      description: textarea.value,
+      createdAt: now
     };
+
 
     try {
       const response = await addDeckToDB(newDeck);
 
       if (response) {
-        // Добавляем в массив объект с нужными полями
         decks.value.push(response);
-        form.name = '';
-        textarea.value = '';
+        form.name = response.title;
+        textarea.value = response.description;
 
         if (currentPage.value > Math.ceil(decks.value.length / pageSize.value)) {
           currentPage.value = Math.ceil(decks.value.length / pageSize.value);
@@ -563,6 +569,7 @@ const dialogVisibleDeckModal = ref(false);
 //Получение колод пользователя========================================================================================
 const loadUserDecks = async () => {
   try {
+    userStore.id = 1;
     if (userStore.id === null) {
       console.error('ID пользователя не определен');
       return;

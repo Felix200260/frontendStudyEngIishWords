@@ -1,6 +1,6 @@
 import axiosInstance from '@/api/axios';
 import { DeckDto } from '@/models/DescDto';
-const prefix = '/api/Deck';
+const prefix = '/Deck';
 
 // Получение колод пользователя
 // Получение колод пользователя
@@ -15,9 +15,14 @@ export const getUserDecks = async (userId: number): Promise<DeckDto[]> => {
 export const addDeckToDB = async (
   newDeck: { title: string; description: string }
 ): Promise<{ userId: number; title: string; description: string }> => {
+  const payload = {
+    ...newDeck,
+    userId: 1 // временно фиксированное значение
+  };
   const { data } = await axiosInstance.post<{ userId: number; title: string; description: string }>(
+    //todo добавиьт сюда категорию
     `${prefix}`,
-    newDeck
+    payload
   );
   return data;
 };
