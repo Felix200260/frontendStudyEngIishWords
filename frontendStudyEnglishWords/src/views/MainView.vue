@@ -181,6 +181,133 @@
             </template>
           </el-dialog>
           <!---->
+          <!----Редактирование колоды-->
+          <el-dialog
+            v-model="dialogOpenEditDeck"
+            title="Редактирование колоды"
+            width="500"
+          >
+            <el-form :model="form">
+              <el-form-item
+                label="Название колоды"
+                :label-width="formLabelWidth"
+              >
+                <el-input v-model="form.name" autocomplete="off" />
+              </el-form-item>
+              <el-form-item label="Категория" :label-width="formLabelWidth">
+                <div class="m-4">
+                  <el-select
+                    v-model="form.categories"
+                    multiple
+                    placeholder="Выбрать"
+                    style="width: 240px"
+                  >
+                    <el-option
+                      v-for="category in categories"
+                      :key="category.id"
+                      :label="category.title"
+                      :value="category.title"
+                    >
+                      <template #default>
+                        <div
+                          style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                          "
+                        >
+                          <span>{{ category.title }}</span>
+                          <el-button
+                            type="text"
+                            size="small"
+                            @click.stop="confirmDeleteCategory(category)"
+                          >
+                            Удалить
+                          </el-button>
+                        </div>
+                      </template>
+                    </el-option>
+                    <el-button
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 10px;
+                      "
+                      :label="`Добавить`"
+                      @click="handleCategoryChange('add')"
+                    >
+                      <template #default>
+                        <span style="color: #409eff; font-weight: bold">
+                          <el-icon
+                            style="vertical-align: middle; margin-right: 4px"
+                          ><Plus
+                          /></el-icon>
+                          Добавить
+                        </span>
+                      </template>
+                    </el-button>
+                  </el-select>
+                </div>
+              </el-form-item>
+              <el-form-item label="Описание" :label-width="formLabelWidth">
+                <el-input
+                  v-model="textarea"
+                  style="width: 240px"
+                  :rows="2"
+                  type="textarea"
+                  placeholder="Введите описание"
+                />
+              </el-form-item>
+              <!-- Диалог для добавления новой категории -->
+              <el-dialog
+                v-model="dialogAddCategoryVisible"
+                title="Добавить категорию"
+              >
+                <el-form>
+                  <el-form-item label="Название категории">
+                    <el-input v-model="newCategoryName" />
+                  </el-form-item>
+                </el-form>
+                <template #footer>
+                  <el-button @click="dialogAddCategoryVisible = false"
+                  >Отмена</el-button
+                  >
+                  <el-button type="primary" @click="addCategory"
+                  >Добавить</el-button
+                  >
+                </template>
+              </el-dialog>
+              <!-- Диалог для удаления категории -->
+              <el-dialog
+                v-model="dialogDeleteCategoryVisible"
+                title="Удалить категорию"
+              >
+                <p>
+                  Вы уверены, что хотите удалить категорию "{{
+                    categoryToDelete?.label
+                  }}"?
+                </p>
+                <template #footer>
+                  <el-button @click="dialogDeleteCategoryVisible = false"
+                  >Отмена</el-button
+                  >
+                  <el-button type="danger" @click="deleteCategory"
+                  >Удалить</el-button
+                  >
+                </template>
+              </el-dialog>
+            </el-form>
+
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
+                <el-button type="primary" @click="saveEditedDeck"
+                >Изменить колоду</el-button
+                >
+              </div>
+            </template>
+          </el-dialog>
           <div class="outputFromSystem">
             <el-icon
               style="
@@ -234,28 +361,34 @@
                   style="max-width: 480px"
                 >
                   <template #header>
-                    <div
-                      class="flex"
-                      style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                      "
-                    >
+                    <div style="display: flex; justify-content: space-between">
                       <!-- Заголовок -->
                       <div class="card-header">
                         <span>{{ card.title }}</span>
                       </div>
 
-                      <!-- Крестик -->
-                      <div>
-                        <button
-                          class="close-button"
-                          @click="() => { dialogVisibleDeckModal = true; deckIdToDelete = card.id; }"
-                        >
-                          ✖
-                        </button>
-                      </div>
+                      <!-- Редактирование -->
+                      <div class="mr-5" style="display: flex">
+                        <div style="margin-right: 10px">
+                          <el-button
+                            class="edit-button"
+                            @click="() => openEditDeck(card)"
+                          >
+                            <el-icon>
+                              <Edit />
+                            </el-icon>
+                          </el-button>
+                        </div>
+                        <!-- Крестик -->
+                        <div>
+                          <el-button
+                            class="close-button"
+                            @click="() => { dialogVisibleDeckModal = true; deckIdToDelete = card.id; }"
+                          >
+                            ✖
+                          </el-button>
+                        </div>
+                    </div>
                     </div>
                   </template>
 
@@ -302,6 +435,7 @@
           <template v-else>
             <!-- Заглушка при отсутствии карточек -->
             <div class="empty-placeholder">
+              <div class="zaglushka" style="flex-grow: 1"></div>
               <div class="zaglushka" style="flex-grow: 1">
                 <el-icon>
                   <Plus />
@@ -384,7 +518,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { addDeckToDB, deleteDeck, getUserDecks } from '@/service/DeckService';
+import { addDeckToDB, deleteDeck, getUserDecks, updateDeck } from '@/service/DeckService';
 import type { Deck } from '@/utils/IDeck';
 import { getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
@@ -444,6 +578,7 @@ const deleteCategory = () => {
 //===========================================
 
 const dialogOpenAddDeck = ref(false);
+const dialogOpenEditDeck = ref(false);
 
 const userStore = useUserStore();
 
@@ -487,6 +622,9 @@ const form = reactive({
 });
 
 const textarea = ref('');
+
+const editingDeckId = ref<number | undefined>(null);
+
 
 //Поиск====================================================================================
 interface LinkItem {
@@ -636,6 +774,34 @@ const removeDeck = async (deckId: number | undefined) => {
 }
 
 //Получение колод пользователя========================================================================================
+//Редактирование параметров колоды========================================================================================
+const openEditDeck = (deck: Deck) => {
+  editingDeckId.value = deck.id;
+  form.name = deck.title;
+  form.categories = deck.title;
+  textarea.value = deck.description ?? '';
+  dialogOpenEditDeck.value = true;
+};
+const saveEditedDeck = async () => {
+  if (!editingDeckId.value) return;
+  const updatedDeck = {
+    userId: userStore.id ?? 1,
+    title: form.name,
+    categories: form.categories,
+    description: textarea.value,
+    // другие нужные поля, если есть
+  };
+  const response = await updateDeck(editingDeckId.value, updatedDeck);
+  if (response) {
+    const idx = decks.value.findIndex(deck => deck.id === editingDeckId.value);
+    if (idx !== -1) {
+      decks.value[idx] = { ...decks.value[idx], ...updatedDeck };
+    }
+    dialogOpenEditDeck.value = false;
+  }
+};
+//Редактирование параметров колоды========================================================================================
+
 </script>
 
 <style scoped>
