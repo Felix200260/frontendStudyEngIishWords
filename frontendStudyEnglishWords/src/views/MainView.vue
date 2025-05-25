@@ -433,35 +433,9 @@
             </el-row>
           </template>
           <template v-else>
-            <!-- Заглушка при отсутствии карточек -->
-            <div class="empty-placeholder">
-              <div class="zaglushka" style="flex-grow: 1"></div>
-              <div class="zaglushka" style="flex-grow: 1">
-                <el-icon>
-                  <Plus />
-                </el-icon>
-                <p>
-                  Здесь будут отображаться ваши колоды. Нажмите "Добавить
-                  колоду", чтобы создать новую.
-                </p>
-                <el-button type="primary" @click="dialogOpenAddDeck = true">
-                  Добавить колоду
-                </el-button>
-              </div>
-              <!--Пагинация-->
-              <div class="footerForZaglushka">
-                <el-pagination
-                  :current-page="currentPage"
-                  :page-size="pageSize"
-                  :total="decks.length"
-                  class="pagination"
-                  default-page-size="1"
-                  layout="prev, pager, next"
-                  background
-                  @current-change="currentPage = $event"
-                />
-              </div>
-            </div>
+            <!--/Создание карт=====================================================/-->
+            <CreateCards @close="showDecksList = true"></CreateCards>
+            <!--/Создание карт=====================================================/-->
           </template>
           <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
           <el-dialog
