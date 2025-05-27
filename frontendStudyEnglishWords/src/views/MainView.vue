@@ -10,7 +10,7 @@
 
             <el-menu-item-group>
               <el-menu-item
-                v-for="(deck, index) in decks"
+                v-for="(deck, index) in filteredDecks"
                 :key="deck.id ?? index"
                 :index="String(index + 1)"
               >
@@ -28,19 +28,18 @@
           <div class="DeckSearch">
             <el-autocomplete
               v-model="state"
-              :fetch-suggestions="querySearch"
-              popper-class="my-autocomplete"
+              clearable
               placeholder="Найти колоду"
+              :fetch-suggestions="querySearch"
               @select="handleSelect"
             >
               <template #suffix>
                 <el-icon class="el-input__icon" @click="handleIconClick">
-                  <edit />
+                  <Edit />
                 </el-icon>
               </template>
               <template #default="{ item }">
-                <div class="value">{{ item.value }}</div>
-                <span class="link">{{ item.link }}</span>
+                <div>{{ item.value }}</div>
               </template>
             </el-autocomplete>
           </div>
@@ -350,7 +349,7 @@
             <!-- Список колод -->
             <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
               <el-col
-                v-for="(card, index) in decks"
+                v-for="(card, index) in filteredDecks"
                 :key="index"
                 :span="6"
                 style="margin-top: 50px"
@@ -775,7 +774,40 @@ const saveEditedDeck = async () => {
   }
 };
 //Редактирование параметров колоды========================================================================================
+const showDecksList = ref(true);
+//================================================================================================================ПОиск колоды
+const deckSuggestions = computed(() =>
+  decks.value.map(deck => ({
+    value: deck.title,
+    link: deck.id // или другая инфа, если нужно
+  }))
+);
 
+const createFilter = (queryString: string) => {
+  return (deck: { value: string; link: any }) =>
+    deck.value.toLowerCase().includes(queryString.toLowerCase());
+};
+
+
+const querySearch = (queryString: string, cb: (results: any[]) => void) => {
+  const results = queryString
+    ? deckSuggestions.value.filter(createFilter(queryString))
+    : deckSuggestions.value;
+  cb(results);
+};
+
+const handleSelect = (item: any) => {
+  // тут можешь что-то делать при выборе
+  console.log('Выбрано:', item);
+};
+
+const filteredDecks = computed(() => {
+  if (!state.value) return decks.value;
+  return decks.value.filter(deck =>
+    deck.title.toLowerCase().includes(state.value.toLowerCase())
+  );
+});
+//================================================================================================================
 </script>
 
 <style scoped>
