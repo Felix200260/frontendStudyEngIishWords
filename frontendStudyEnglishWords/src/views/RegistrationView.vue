@@ -1,5 +1,4 @@
 <template>
-  <div style="color: crimson">Вот они, изменения</div>
   <div class="form">
     <el-form
       ref="ruleFormRef"
@@ -19,7 +18,7 @@
       </el-form-item>
 
       <!-- Поле для email -->
-      <!-- <el-form-item
+      <el-form-item
         prop="unique_email"
         label="Email"
         :rules="[
@@ -34,8 +33,9 @@
             trigger: ['blur', 'change']
           }
         ]"
-      > -->
-      <el-input v-model="dataForm.unique_email" />
+      >
+        <el-input v-model="dataForm.unique_email" />
+      </el-form-item>
       <el-alert v-if="emailError" title="Пользователь с таким email уже существует" type="error" />
 
       <!-- </el-form-item> -->
@@ -67,7 +67,9 @@
       </el-form-item>
 
       <div style="text-align: center">
-        <router-link to="/login">Войти</router-link>
+        <el-button>
+          <router-link to="/login" style="text-decoration: none; color: black">Войти</router-link>
+        </el-button>
       </div>
     </el-form>
   </div>
