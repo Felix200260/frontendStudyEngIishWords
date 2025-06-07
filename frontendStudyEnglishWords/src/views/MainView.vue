@@ -477,6 +477,7 @@
             <CreateCards
               :deck-id="selectedDeckId"
               :existing-cards="selectedDeckCards"
+              :deck-data="selectedDeck"
               @close="showDecksList = true"
             ></CreateCards>
             <!--/Создание карт=====================================================/-->
@@ -624,6 +625,7 @@ const logout = () => {
 
 const selectedDeckId = ref<number | undefined | null>(null);
 const selectedDeckCards = ref<CardDto[]>([]);
+const selectedDeck = ref<Deck | null>(null);
 
 const handleCardClick = async (deck: Deck) => {
   try {
@@ -632,6 +634,7 @@ const handleCardClick = async (deck: Deck) => {
         return;
       }
       selectedDeckId.value = deck.id;
+      selectedDeck.value = deck;
       selectedDeckCards.value = await getCardsByDeckId(deck.id);
       showDecksList.value = false;
   } catch (error) {

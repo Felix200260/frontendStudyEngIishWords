@@ -115,9 +115,13 @@
 import { Delete, Close, Plus } from '@element-plus/icons-vue';
 import { ref, watch } from 'vue';
 import { CardDto } from '@/models/CardDto';
+import { Deck } from '@/utils/IDeck';
 
 const cards = ref<{ term: string; definition: string }[]>([]);
 const hover = ref(false)
+
+const inputNameDeck = ref('');
+const inputDescriptionDeck = ref('');
 
 const addCard = () => cards.value.push({ term: '', definition: '' });
 const deleteCard = (idx: number) => cards.value.splice(idx, 1);
@@ -125,6 +129,7 @@ const deleteCard = (idx: number) => cards.value.splice(idx, 1);
 const props = defineProps<{
   deckId: number | null | undefined;
   existingCards: CardDto[];
+  deckData: Deck | null;
 }>();
 
 watch(() => props.existingCards, (newCards) => {if (newCards && newCards.length > 0) {
@@ -134,6 +139,13 @@ watch(() => props.existingCards, (newCards) => {if (newCards && newCards.length 
   }));
 } else {
     cards.value = [{ term: '', definition: '' }];
+  }
+}, { immediate: true });
+
+watch(() => props.deckData, (newDeck) => {
+  if (newDeck) {
+    inputNameDeck.value = newDeck.title;
+    inputDescriptionDeck.value = newDeck.description ?? '';
   }
 }, { immediate: true });
 
