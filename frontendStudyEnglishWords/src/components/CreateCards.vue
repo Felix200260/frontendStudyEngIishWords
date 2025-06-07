@@ -113,19 +113,29 @@
 
 <script setup lang="ts">
 import { Delete, Close, Plus } from '@element-plus/icons-vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { CardDto } from '@/models/CardDto';
 
-const inputDefinition = ref('');
-const inputTerm = ref('');
-const inputNameDeck = ref('');
-const inputDescriptionDeck = ref('');
-
-const cards = ref([{ term: '', definition: '' }])
-
+const cards = ref<{ term: string; definition: string }[]>([]);
 const hover = ref(false)
 
 const addCard = () => cards.value.push({ term: '', definition: '' });
 const deleteCard = (idx: number) => cards.value.splice(idx, 1);
+
+const props = defineProps<{
+  deckId: number | null | undefined;
+  existingCards: CardDto[];
+}>();
+
+watch(() => props.existingCards, (newCards) => {if (newCards && newCards.length > 0) {
+  cards.value = newCards.map(card => ({
+    term: card.englishWord,
+    definition: card.russianWord
+  }));
+} else {
+    cards.value = [{ term: '', definition: '' }];
+  }
+}, { immediate: true });
 
 </script>
 

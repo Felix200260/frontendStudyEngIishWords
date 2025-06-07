@@ -219,13 +219,14 @@
                           <el-button
                             type="text"
                             size="small"
-                            @click.stop="confirmDeleteCategory(category)"
+                            @click.stop="deleteCategory(category)"
                           >
                             Удалить
                           </el-button>
                         </div>
                       </template>
                     </el-option>
+                    <!--Добавить-->
                     <el-button
                       style="
                         display: flex;
@@ -233,19 +234,42 @@
                         align-items: center;
                         margin: 10px;
                       "
-                      :label="`Добавить`"
+                      :label="`Добавить категорию`"
                       @click="handleCategoryChange('add')"
                     >
                       <template #default>
                         <span style="color: #409eff; font-weight: bold">
                           <el-icon
                             style="vertical-align: middle; margin-right: 4px"
-                          ><Plus
+                            ><Plus
                           /></el-icon>
-                          Добавить
+                          Добавить категорию
                         </span>
                       </template>
                     </el-button>
+                    <!--Добавить-->
+                    <!--Редактирование-->
+                    <el-button
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 10px;
+                      "
+                      :label="`Редактирование`"
+                      @click="handleCategoryChange('edit')"
+                    >
+                      <template #default>
+                        <span style="color: #409eff; font-weight: bold">
+                          <el-icon
+                            style="vertical-align: middle; margin-right: 4px"
+                            ><Edit
+                          /></el-icon>
+                          Редактирование категорию
+                        </span>
+                      </template>
+                    </el-button>
+                    <!--Редактирование-->
                   </el-select>
                 </div>
               </el-form-item>
@@ -270,10 +294,10 @@
                 </el-form>
                 <template #footer>
                   <el-button @click="dialogAddCategoryVisible = false"
-                  >Отмена</el-button
+                    >Отмена</el-button
                   >
                   <el-button type="primary" @click="addCategory"
-                  >Добавить</el-button
+                    >Добавить</el-button
                   >
                 </template>
               </el-dialog>
@@ -289,10 +313,10 @@
                 </p>
                 <template #footer>
                   <el-button @click="dialogDeleteCategoryVisible = false"
-                  >Отмена</el-button
+                    >Отмена</el-button
                   >
                   <el-button type="danger" @click="deleteCategory"
-                  >Удалить</el-button
+                    >Удалить</el-button
                   >
                 </template>
               </el-dialog>
@@ -302,7 +326,7 @@
               <div class="dialog-footer">
                 <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
                 <el-button type="primary" @click="saveEditedDeck"
-                >Изменить колоду</el-button
+                  >Изменить колоду</el-button
                 >
               </div>
             </template>
@@ -344,7 +368,7 @@
         class="scrollbar-demo-item"
       >
         <el-main>
-          <template v-if="decks.length">
+          <template v-if="decks.length && showDecksList">
             <div>Вы создали вот столько колод: {{ decks.length }}</div>
             <!-- Список колод -->
             <el-row :gutter="20" style="margin-top: 20px; margin-left: 20px">
@@ -356,7 +380,7 @@
               >
                 <el-card
                   class="clickable-card"
-                  @click="handleCardClick"
+                  @click="() => handleCardClick(card)"
                   style="max-width: 480px"
                 >
                   <template #header>
@@ -382,12 +406,17 @@
                         <div>
                           <el-button
                             class="close-button"
-                            @click="() => { dialogVisibleDeckModal = true; deckIdToDelete = card.id; }"
+                            @click="
+                              () => {
+                                dialogVisibleDeckModal = true;
+                                deckIdToDelete = card.id;
+                              }
+                            "
                           >
                             ✖
                           </el-button>
                         </div>
-                    </div>
+                      </div>
                     </div>
                   </template>
 
@@ -396,16 +425,25 @@
                   </div>
 
                   <template #footer>
-                    <div style="margin: 10px" class="flex gap-2">
-                      <el-tag type="primary">Tag 1</el-tag>
-                      <el-tag type="success">Tag 2</el-tag>
-                      <el-tag type="info">Tag 3</el-tag>
-                      <el-tag type="warning">Tag 4</el-tag>
-                      <el-tag type="danger">Tag 5</el-tag>
+                    <div style="display: flex; flex-wrap: wrap">
+                      <div style="margin-right: 5px; margin-top: 5px">
+                        <el-tag type="primary">Tag 1</el-tag>
+                      </div>
+                      <div style="margin-right: 5px; margin-top: 5px">
+                        <el-tag type="success">Tag 2</el-tag>
+                      </div>
+                      <div style="margin-right: 5px; margin-top: 5px">
+                        <el-tag type="info">Tag 3</el-tag>
+                      </div>
+                      <div style="margin-right: 5px; margin-top: 5px">
+                        <el-tag type="warning">Tag 4</el-tag>
+                      </div>
+                      <div style="margin-right: 5px; margin-top: 5px">
+                        <el-tag type="danger">Tag 5</el-tag>
+                      </div>
                     </div>
                   </template>
                 </el-card>
-
               </el-col>
               <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
               <el-dialog
@@ -421,7 +459,10 @@
                     </el-button>
                     <el-button
                       type="primary"
-                      @click="() => deckIdToDelete !== null && removeDeck(deckIdToDelete)"
+                      @click="
+                        () =>
+                          deckIdToDelete !== null && removeDeck(deckIdToDelete)
+                      "
                     >
                       Да, удалить
                     </el-button>
@@ -433,9 +474,14 @@
           </template>
           <template v-else>
             <!--/Создание карт=====================================================/-->
-            <CreateCards @close="showDecksList = true"></CreateCards>
+            <CreateCards
+              :deck-id="selectedDeckId"
+              :existing-cards="selectedDeckCards"
+              @close="showDecksList = true"
+            ></CreateCards>
             <!--/Создание карт=====================================================/-->
           </template>
+          <!--//todo сделать отображение в menu если чел нажадл по колоде и начал вводить карточки-->
           <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
           <el-dialog
             v-model="dialogFormVisible"
@@ -491,10 +537,18 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { addDeckToDB, deleteDeck, getUserDecks, updateDeck } from '@/service/DeckService';
+import {
+  addDeckToDB,
+  deleteDeck,
+  getUserDecks,
+  updateDeck
+} from '@/service/DeckService';
 import type { Deck } from '@/utils/IDeck';
-import { getUserCategories } from '@/service/CategoriesService';
+import { deleteCategories, getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
+import CreateCards from '@/components/CreateCards.vue';
+import { getCardsByDeckId } from '@/service/CardService';
+import { CardDto } from '@/models/CardDto';
 
 const router = useRouter();
 
@@ -512,6 +566,9 @@ const newCategoryName = ref('');
 const handleCategoryChange = (value: string) => {
   dialogAddCategoryVisible.value = false;
   if (value === 'add') {
+    dialogAddCategoryVisible.value = true;
+  }
+  if (value === 'edit') {
     dialogAddCategoryVisible.value = true;
   }
 };
@@ -532,22 +589,12 @@ const addCategory = () => {
 const dialogDeleteCategoryVisible = ref(false);
 const categoryToDelete = ref<{ label: string; value: string } | null>(null);
 
-const confirmDeleteCategory = (category: { id: number; title: string }) => {
-  //подтверждения удаления
-  // categoryToDelete.value = category;
-  // dialogDeleteCategoryVisible.value = true;
+const deleteCategory = async (category: {
+  id: number;
+  title: string;
+}) => {
+  return await deleteCategories(category.id);
 };
-
-const deleteCategory = () => {
-  //   if (categoryToDelete.value) {
-  //     categories.value = categories.value.filter(
-  //       (cat) => cat.value !== categoryToDelete.value?.value
-  //     );
-  //     categoryToDelete.value = null;
-  //     dialogDeleteCategoryVisible.value = false;
-  //   }
-};
-
 //===========================================
 
 const dialogOpenAddDeck = ref(false);
@@ -575,9 +622,21 @@ const logout = () => {
 //   })
 // })
 
-const handleCardClick = () => {
-  // Обработка клика по карточке
-  console.log('Card clicked!');
+const selectedDeckId = ref<number | undefined | null>(null);
+const selectedDeckCards = ref<CardDto[]>([]);
+
+const handleCardClick = async (deck: Deck) => {
+  try {
+    if (!deck.id) {
+        console.error('ID колоды отсутствует');
+        return;
+      }
+      selectedDeckId.value = deck.id;
+      selectedDeckCards.value = await getCardsByDeckId(deck.id);
+      showDecksList.value = false;
+  } catch (error) {
+      console.error('Ошибка загрузки карточек:', error);
+  }
 };
 
 const dialogFormVisible = ref(false);
@@ -596,8 +655,7 @@ const form = reactive({
 
 const textarea = ref('');
 
-const editingDeckId = ref<number | undefined>(null);
-
+const editingDeckId = ref<number | null>(null);
 
 //Поиск====================================================================================
 interface LinkItem {
@@ -608,40 +666,10 @@ interface LinkItem {
 const state = ref('');
 const links = ref<LinkItem[]>([]);
 
-const querySearch = (queryString: string, cb: any) => {
-  const results = queryString
-    ? links.value.filter(createFilter(queryString))
-    : links.value;
-  // call callback function to return suggestion objects
-  cb(results);
-};
-const createFilter = (queryString: string) => {
-  return (item: LinkItem) => {
-    return item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
-  };
-};
-const loadAll = () => {
-  return [
-    { value: 'vue', link: 'https://github.com/vuejs/vue' },
-    { value: 'element', link: 'https://github.com/ElemeFE/element' },
-    { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
-    { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
-    { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
-    { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
-    { value: 'babel', link: 'https://github.com/babel/babel' }
-  ];
-};
-const handleSelect = (item: LinkItem) => {
-  console.log(item);
-};
-
 const handleIconClick = (ev: Event) => {
   console.log(ev);
 };
 
-onMounted(() => {
-  links.value = loadAll();
-});
 onMounted(async () => {
   const userId = 1;
   categories.value = await getUserCategories(userId);
@@ -723,7 +751,6 @@ const loadUserDecks = async () => {
 
     const userDecks = await getUserDecks(userStore.id);
     decks.value = userDecks;
-    console.log('Загружены колоды:', decks.value);
   } catch (error) {
     console.error('Ошибка при загрузке колод:', error);
   }
@@ -736,19 +763,22 @@ onMounted(() => {
 
 const deckIdToDelete = ref<number | undefined>(undefined);
 
-
 const removeDeck = async (deckId: number | undefined) => {
   const response = await deleteDeck(deckId);
   if (response) {
-    decks.value = decks.value.filter(deck => deck.id !== deckId);
+    decks.value = decks.value.filter((deck) => deck.id !== deckId);
   }
   dialogVisibleDeckModal.value = false;
   return response;
-}
+};
 
 //Получение колод пользователя========================================================================================
 //Редактирование параметров колоды========================================================================================
 const openEditDeck = (deck: Deck) => {
+  if (!deck.id) {
+      console.error('ID колоды отсутствует');
+      return;
+    }
   editingDeckId.value = deck.id;
   form.name = deck.title;
   form.categories = deck.title;
@@ -761,12 +791,14 @@ const saveEditedDeck = async () => {
     userId: userStore.id ?? 1,
     title: form.name,
     categories: form.categories,
-    description: textarea.value,
+    description: textarea.value
     // другие нужные поля, если есть
   };
   const response = await updateDeck(editingDeckId.value, updatedDeck);
   if (response) {
-    const idx = decks.value.findIndex(deck => deck.id === editingDeckId.value);
+    const idx = decks.value.findIndex(
+      (deck) => deck.id === editingDeckId.value
+    );
     if (idx !== -1) {
       decks.value[idx] = { ...decks.value[idx], ...updatedDeck };
     }
