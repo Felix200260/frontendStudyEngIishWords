@@ -479,6 +479,7 @@
               :existing-cards="selectedDeckCards"
               :deck-data="selectedDeck"
               @close="showDecksList = true"
+              @deck-updated="handleDeckUpdated"
             ></CreateCards>
             <!--/Создание карт=====================================================/-->
           </template>
