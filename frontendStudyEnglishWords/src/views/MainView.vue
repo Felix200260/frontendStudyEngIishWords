@@ -574,6 +574,19 @@ const handleCategoryChange = (value: string) => {
   }
 };
 
+const handleDeckUpdated = (updatedDeck: Deck) => {
+  // Обновляем колоду в списке
+  const index = decks.value.findIndex(deck => deck.id === updatedDeck.id);
+  if (index !== -1) {
+    decks.value[index] = updatedDeck;
+  }
+
+  // Обновляем выбранную колоду
+  selectedDeck.value = updatedDeck;
+
+  console.log('🔄 Колода обновлена в MainView');
+};
+
 const addCategory = () => {
   // if (newCategoryName.value.trim()) {
   //   categories.value.push({

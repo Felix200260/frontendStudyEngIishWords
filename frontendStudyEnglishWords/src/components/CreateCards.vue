@@ -110,18 +110,18 @@
     </el-card>
     <div style="display: flex; justify-content: center; align-items: center;">
       <button
-        @click=""
+        @click="saveChanges"
         style="
-      padding: 12px 32px;
-      border: 1px solid white;
-      background: #409eff;
-      box-shadow: 5px 5px 5px #dcdfe6;
-      border-radius: 32px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: border-color 0.2s;
-      margin-top: 10px;
-    "
+          padding: 12px 32px;
+          border: 1px solid white;
+          background: #409eff;
+          box-shadow: 5px 5px 5px #dcdfe6;
+          border-radius: 32px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: border-color 0.2s;
+          margin-top: 10px;
+  "
         @mouseover="hover = true"
         @mouseleave="hover = false"
         :style="{ borderColor: hover ? '#fff' : '#c2c6c9' }"
