@@ -20,6 +20,14 @@ namespace studyEnglishWordsBackend.Service
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
         }
+        //Удаление категорий
+        public async Task<List<Categories>> DeleteCategoriesByUserIdAsync(int userId)
+        {
+            // Пример для EF Core
+            return await _context.Categories
+                .Where(c => c.UserId == userId)
+                .ToListAsync();
+        }
     }
 }
 

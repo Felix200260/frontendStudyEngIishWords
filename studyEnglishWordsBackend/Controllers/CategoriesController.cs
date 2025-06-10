@@ -24,5 +24,15 @@ namespace studyEnglishWordsBackend.Controllers
             var categories = await _categoriesService.GetCategoriesByUserIdAsync(userId);
             return Ok(categories);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> DeleteCategories([FromQuery] int categoriesId)
+        {
+            if (categoriesId == null)
+                return BadRequest("Некорректный categoriesId");
+
+            var categories = await _categoriesService.GetCategoriesByUserIdAsync(categoriesId);
+            return Ok(categories);
+        }
     }
 }
