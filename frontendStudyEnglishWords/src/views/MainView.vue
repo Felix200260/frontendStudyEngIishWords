@@ -12,7 +12,7 @@
               <el-menu-item
                 v-for="(deck, index) in filteredDecks"
                 :key="deck.id ?? index"
-                :index="String(index + 1)"
+                :index="String(index)"
               >
                 {{ deck.title }}
               </el-menu-item>
@@ -219,7 +219,7 @@
                           <el-button
                             type="text"
                             size="small"
-                            @click.stop="deleteCategory(category)"
+                            @click.stop="deleteCategory()"
                           >
                             Удалить
                           </el-button>
@@ -546,11 +546,12 @@ import {
   updateDeck
 } from '@/service/DeckService';
 import type { Deck } from '@/utils/IDeck';
-import { deleteCategories, getUserCategories } from '@/service/CategoriesService';
+import { getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
 import CreateCards from '@/components/CreateCards.vue';
 import { getCardsByDeckId } from '@/service/CardService';
 import { CardDto } from '@/models/CardDto';
+import { ElMessage } from 'element-plus';
 
 const router = useRouter();
 
@@ -604,11 +605,14 @@ const addCategory = () => {
 const dialogDeleteCategoryVisible = ref(false);
 const categoryToDelete = ref<{ label: string; value: string } | null>(null);
 
-const deleteCategory = async (category: {
-  id: number;
-  title: string;
-}) => {
-  return await deleteCategories(category.id);
+const deleteCategory = async () => {
+  if (categoryToDelete.value) {
+    // Здесь должен быть вызов вашего API для удаления категории
+    // const response = await deleteCategoryFromAPI(categoryId);
+    console.log('Удаление категории:', categoryToDelete.value);
+    dialogDeleteCategoryVisible.value = false;
+    categoryToDelete.value = null;
+  }
 };
 //===========================================
 
@@ -857,6 +861,36 @@ const filteredDecks = computed(() => {
   );
 });
 //================================================================================================================
+// Обработка обновления карточек
+  const handleCardsUpdated = async () => {
+    if (selectedDeckId.value) {
+        try {
+            // Перезагружаем карточки для выбранной колоды
+              selectedDeckCards.value = await getCardsByDeckId(selectedDeckId.value);
+            ElMessage.success('Список карточек обновлен!');
+          } catch (error) {
+            console.error('Ошибка обновления карточек:', error);
+          }
+      }
+  };
+
+// Выбор колоды (добавь эту логику где нужно)
+  const selectDeck = async (deck: Deck) => {
+    selectedDeck.value = deck;
+    selectedDeckId.value = deck.id;
+      try {
+        selectedDeckCards.value = await getCardsByDeckId(deck.id!);
+      } catch (error) {
+        console.error('Ошибка загрузки карточек:', error);
+        selectedDeckCards.value = [];
+      }
+  };
+
+const showCreateCards = ref(false);
+const confirmDeleteCategory = (category: { id: number; title: string }) => {
+  categoryToDelete.value = { label: category.title, value: category.title };
+  dialogDeleteCategoryVisible.value = true;
+};
 </script>
 
 <style scoped>
@@ -885,7 +919,7 @@ const filteredDecks = computed(() => {
   align-items: center;
 }
 
-.toolbar > div:nth-child(-n + 3) {
+.toolbar > div:nth-child(-n+3) {
   margin-right: 20px;
 }
 
