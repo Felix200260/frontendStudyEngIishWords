@@ -396,7 +396,7 @@
                           <el-tooltip content="Редактировать параметры колоды">
                             <el-button
                               class="edit-button"
-                              @click="() => openEditDeck(card)"
+                              @click.stop="openEditDeck(card)"
                             >
                               <el-icon>
                                 <Edit />
@@ -476,7 +476,7 @@
               <!--/Диалоговое окно=====================================================/-->
             </el-row>
           </template>
-          <template v-else>
+          <template v-else-if="!showDecksList && selectedDeckId">
             <!--/Создание карт=====================================================/-->
             <CreateCards
               :deck-id="selectedDeckId"
@@ -486,6 +486,15 @@
               @deck-updated="handleDeckUpdated"
             ></CreateCards>
             <!--/Создание карт=====================================================/-->
+          </template>
+          <template v-else-if="!decks.length">
+            <div class="empty-placeholder">
+              <el-icon><Box /></el-icon>
+              <p>У вас пока нет колод</p>
+              <el-button type="primary" @click="dialogOpenAddDeck = true">
+                Создать первую колоду
+              </el-button>
+            </div>
           </template>
           <!--//todo сделать отображение в menu если чел нажадл по колоде и начал вводить карточки-->
           <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
@@ -800,6 +809,7 @@ const removeDeck = async (deckId: number | undefined) => {
 //Получение колод пользователя========================================================================================
 //Редактирование параметров колоды========================================================================================
 const openEditDeck = (deck: Deck) => {
+  event?.stopPropagation();
   if (!deck.id) {
       console.error('ID колоды отсутствует');
       return;
@@ -809,6 +819,7 @@ const openEditDeck = (deck: Deck) => {
   form.categories = deck.title;
   textarea.value = deck.description ?? '';
   dialogOpenEditDeck.value = true;
+  showDecksList.value = true;
 };
 const saveEditedDeck = async () => {
   if (!editingDeckId.value) return;
