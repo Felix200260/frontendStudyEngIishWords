@@ -393,28 +393,32 @@
                       <!-- Редактирование -->
                       <div class="mr-5" style="display: flex">
                         <div style="margin-right: 10px">
-                          <el-button
-                            class="edit-button"
-                            @click="() => openEditDeck(card)"
-                          >
-                            <el-icon>
-                              <Edit />
-                            </el-icon>
-                          </el-button>
+                          <el-tooltip content="Редактировать параметры колоды">
+                            <el-button
+                              class="edit-button"
+                              @click="() => openEditDeck(card)"
+                            >
+                              <el-icon>
+                                <Edit />
+                              </el-icon>
+                            </el-button>
+                          </el-tooltip>
                         </div>
                         <!-- Крестик -->
                         <div>
-                          <el-button
-                            class="close-button"
-                            @click="
+                          <el-tooltip content="Удалить колоду">
+                            <el-button
+                              class="close-button"
+                              @click="
                               () => {
                                 dialogVisibleDeckModal = true;
                                 deckIdToDelete = card.id;
                               }
                             "
-                          >
-                            ✖
-                          </el-button>
+                            >
+                              ✖
+                            </el-button>
+                          </el-tooltip>
                         </div>
                       </div>
                     </div>
