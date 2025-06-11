@@ -19,6 +19,7 @@
 
       <el-card
         v-for="(card, idx) in cards"
+        :data-card-index="idx"
         :key="idx"
         style="border-radius: 18px; margin-bottom: 20px; border: none; padding: 20px;"
       >
@@ -151,7 +152,7 @@
 
 <script setup lang="ts">
 import { Delete, Close } from '@element-plus/icons-vue';
-import { ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { CardDto } from '@/models/CardDto';
 import { Deck } from '@/utils/IDeck';
 import { addCardById, deleteCardById, updateCardById } from '@/service/CardService';
@@ -195,7 +196,25 @@ const addCard = () => {
     isNew: true,
     isModified: false
   });
+
+  // Автоматический скролл к новой карточке
+  nextTick(() => {
+    const newCardIndex = cards.value.length - 1;
+    const newCardElement = document.querySelector(`[data-card-index="${newCardIndex}"]`);
+
+    if (newCardElement) {
+      newCardElement.scrollIntoView({
+        behavior: 'smooth',    // Плавная анимация
+        block: 'center',       // Карточка в центре экрана
+        inline: 'nearest'      // Горизонтальное выравнивание
+      });
+    }
+  });
 };
+
+
+
+
 
 // Удаление карточки
 const removeCard = async (idx: number) => {
