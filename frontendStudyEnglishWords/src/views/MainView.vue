@@ -381,12 +381,7 @@
                           <el-tooltip content="Удалить колоду">
                             <el-button
                               class="close-button"
-                              @click="
-                              () => {
-                                dialogVisibleDeckModal = true;
-                                deckIdToDelete = card.id;
-                              }
-                            "
+                              @click.stop="handleDeleteClick(card.id)"
                             >
                               ✖
                             </el-button>
@@ -421,31 +416,6 @@
                   </template>
                 </el-card>
               </el-col>
-              <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
-              <el-dialog
-                v-model="dialogVisibleDeckModal"
-                title="Предупреждение"
-                width="500"
-              >
-                <span>Вы уверены что хотите удалить колоду?</span>
-                <template #footer>
-                  <div class="dialog-footer">
-                    <el-button @click="dialogVisibleDeckModal = false"
-                      >Отмена
-                    </el-button>
-                    <el-button
-                      type="primary"
-                      @click="
-                        () =>
-                          deckIdToDelete !== null && removeDeck(deckIdToDelete)
-                      "
-                    >
-                      Да, удалить
-                    </el-button>
-                  </div>
-                </template>
-              </el-dialog>
-              <!--/Диалоговое окно=====================================================/-->
             </el-row>
           </template>
           <template v-else-if="!showDecksList && selectedDeckId">
@@ -468,8 +438,31 @@
               </el-button>
             </div>
           </template>
-          <!--//todo сделать отображение в menu если чел нажадл по колоде и начал вводить карточки-->
-          <!-- Диалоговое ок но при нажатие "Добавить колоду" -->
+          <!--/Диалоговое окно о предупреждении о закрытие колоды=====================================================/-->
+          <el-dialog
+            v-model="dialogVisibleDeckModal"
+            title="Предупреждение"
+            width="500"
+          >
+            <span>Вы уверены что хотите удалить колоду?</span>
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="dialogVisibleDeckModal = false"
+                >Отмена
+                </el-button>
+                <el-button
+                  type="primary"
+                  @click="
+                        () =>
+                          deckIdToDelete !== null && removeDeck(deckIdToDelete)
+                      "
+                >
+                  Да, удалить
+                </el-button>
+              </div>
+            </template>
+          </el-dialog>
+          <!--/Диалоговое окно=====================================================/-->
           <el-dialog
             v-model="dialogFormVisible"
             title="Добавить колоду"
@@ -744,6 +737,16 @@ const paginatedDecks = computed(() => {
 //Пагинация========================================================================================
 //Удаление колод========================================================================================
 const dialogVisibleDeckModal = ref(false);
+// Обработка удаления колоды
+const handleDeleteClick = (deckId: number | undefined) => {
+  deckIdToDelete.value = deckId;
+  dialogVisibleDeckModal.value = true;
+};
+const confirmDeleteDeck = async () => {
+  if (deckIdToDelete.value !== null && deckIdToDelete.value !== undefined) {
+    await removeDeck(deckIdToDelete.value);
+  }
+};
 //Удаление колод========================================================================================
 //Получение колод пользователя========================================================================================
 const loadUserDecks = async () => {
