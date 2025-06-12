@@ -418,7 +418,7 @@
               </el-col>
             </el-row>
           </template>
-          <template v-else-if="!showDecksList && selectedDeckId">
+          <template v-else-if="!showDecksList && selectedDeckId && !isOpenWindowStudyWords">
             <!--/Создание карт=====================================================/-->
             <CreateCards
               :deck-id="selectedDeckId"
@@ -426,8 +426,18 @@
               :deck-data="selectedDeck"
               @close="showDecksList = true"
               @deck-updated="handleDeckUpdated"
+              @open-study-window="handleOpenStudyWindow"
             ></CreateCards>
             <!--/Создание карт=====================================================/-->
+          </template>
+          <template v-if="isOpenWindowStudyWords">
+            <StudyWords
+              :deck-id="selectedDeckForStudy?.id"
+              :deck-name="selectedDeckForStudy?.name"
+              :cards="selectedDeckCards"
+              @closeWindowStudyWords="handleCloseWindowStudyWords"
+            >
+            </StudyWords>
           </template>
           <template v-else-if="!decks.length">
             <div class="empty-placeholder">
@@ -483,7 +493,6 @@
                   placeholder="Please input"
                 />
                 <el-button style="margin-top: 20px" size="default">
-                  <!--                @click="openWindowImportCards"-->
                   <router-link to="/importCards">Импортировать </router-link>
                 </el-button>
               </el-form-item>
@@ -506,7 +515,6 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import {
   Edit,
-  Message,
   Plus,
   SwitchButton,
   UserFilled
@@ -529,6 +537,7 @@ import CreateCards from '@/components/CreateCards.vue';
 import { getCardsByDeckId } from '@/service/CardService';
 import { CardDto } from '@/models/CardDto';
 import { ElMessage } from 'element-plus';
+import StudyWords from '@/components/StudyWords.vue';
 
 const router = useRouter();
 
@@ -567,13 +576,6 @@ const handleDeckUpdated = (updatedDeck: Deck) => {
 };
 
 const addCategory = () => {
-  // if (newCategoryName.value.trim()) {
-  //   categories.value.push({
-  //     label: newCategoryName.value,
-  //     value: newCategoryName.value.toLowerCase().replace(/\s+/g, '_')
-  //   });
-  // const response = await addCategory();
-  //todo добавть добавление колоды
   newCategoryName.value = '';
   dialogAddCategoryVisible.value = false;
 };
@@ -602,21 +604,6 @@ const logout = () => {
   userStore.logout(); // Вызываем метод logout из Pinia
   router.push({ name: 'login' }); // Перенаправляем на страницу логина
 };
-
-// onMounted(() => {
-//   new Swiper('.mySwiper', {
-//     slidesPerView: 3,
-//     grid: {
-//       rows: 2
-//     },
-//     spaceBetween: 30,
-//     pagination: {
-//       el: '.swiper-pagination',
-//       clickable: true
-//     },
-//     modules: [Navigation, Pagination]
-//   })
-// })
 
 const selectedDeckId = ref<number | undefined | null>(null);
 const selectedDeckCards = ref<CardDto[]>([]);
@@ -781,6 +768,32 @@ const removeDeck = async (deckId: number | undefined) => {
 };
 
 //Получение колод пользователя========================================================================================
+//Методы загрузки карточек для изучения========================================================================================
+const isLoadingCards = ref(false);
+const selectedDeckForStudy = ref<any>(null);
+
+const loadCardsForStudy = async (deck: any) => {
+  try {
+    isLoadingCards.value = true;
+    selectedDeckForStudy.value = deck;
+
+    const cards = await getCardsByDeckId(deck.id);
+    selectedDeckCards.value = cards;
+
+    if (cards.length === 0) {
+      ElMessage.warning('В этой колоде нет карточек');
+      return;
+    }
+
+    isOpenWindowStudyWords.value = true;
+  } catch (error) {
+    ElMessage.error('Ошибка загрузки карточек');
+    console.error(error);
+  } finally {
+    isLoadingCards.value = false;
+  }
+};
+//Методы загрузки карточек для изучения========================================================================================
 //Редактирование параметров колоды========================================================================================
 const openEditDeck = (deck: Deck) => {
   event?.stopPropagation();
@@ -850,36 +863,19 @@ const filteredDecks = computed(() => {
   );
 });
 //================================================================================================================
-// Обработка обновления карточек
-  const handleCardsUpdated = async () => {
-    if (selectedDeckId.value) {
-        try {
-            // Перезагружаем карточки для выбранной колоды
-              selectedDeckCards.value = await getCardsByDeckId(selectedDeckId.value);
-            ElMessage.success('Список карточек обновлен!');
-          } catch (error) {
-            console.error('Ошибка обновления карточек:', error);
-          }
-      }
-  };
-
-// Выбор колоды (добавь эту логику где нужно)
-  const selectDeck = async (deck: Deck) => {
-    selectedDeck.value = deck;
-    selectedDeckId.value = deck.id;
-      try {
-        selectedDeckCards.value = await getCardsByDeckId(deck.id!);
-      } catch (error) {
-        console.error('Ошибка загрузки карточек:', error);
-        selectedDeckCards.value = [];
-      }
-  };
-
-const showCreateCards = ref(false);
 const confirmDeleteCategory = (category: { id: number; title: string }) => {
   categoryToDelete.value = { label: category.title, value: category.title };
   dialogDeleteCategoryVisible.value = true;
 };
+
+const isOpenWindowStudyWords = ref(false);
+const handleOpenStudyWindow = () => {
+  isOpenWindowStudyWords.value = true;
+}
+
+const handleCloseWindowStudyWords = () => {
+  isOpenWindowStudyWords.value = false;
+}
 </script>
 
 <style scoped>

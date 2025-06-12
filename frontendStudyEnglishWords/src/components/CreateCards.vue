@@ -146,6 +146,30 @@
       >
         {{ isSaving ? '💾 Сохранение...' : '💾 Сохранить изменения' }}
       </button>
+      <button
+        @click="openStudyWindow"
+        :disabled="isSaving"
+        style="
+          padding: 12px 32px;
+          border: 1px solid white;
+          background: #67C23A;
+          box-shadow: 5px 5px 5px #dcdfe6;
+          border-radius: 32px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: border-color 0.2s;
+          margin-top: 10px;
+        "
+        @mouseover="hover = true"
+        @mouseleave="hover = false"
+        :style="{
+          borderColor: hover ? '#fff' : '#c2c6c9',
+          opacity: isSaving ? 0.6 : 1,
+          cursor: isSaving ? 'not-allowed' : 'pointer'
+        }"
+      >
+        Изучать
+      </button>
     </div>
   </div>
 </template>
@@ -167,12 +191,12 @@ interface CardWithStatus {
   isModified: boolean;
 }
 
-// Реактивные переменные
 const cards = ref<CardWithStatus[]>([]);
 const hover = ref(false);
 const isSaving = ref(false);
 const inputNameDeck = ref('');
 const inputDescriptionDeck = ref('');
+const isOpenWindowStudyWords = ref(false);
 
 // Props
 const props = defineProps<{
@@ -185,6 +209,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   close: [];
   cardsUpdated: [];
+  openStudyWindow: [];
 }>();
 
 // Добавление новой карточки
@@ -211,10 +236,6 @@ const addCard = () => {
     }
   });
 };
-
-
-
-
 
 // Удаление карточки
 const removeCard = async (idx: number) => {
@@ -327,6 +348,12 @@ watch(() => props.deckData, (newDeck) => {
     inputDescriptionDeck.value = newDeck.description ?? '';
   }
 }, { immediate: true });
+
+
+
+const openStudyWindow = () => {
+  emit('openStudyWindow');
+}
 </script>
 
 <style scoped>
