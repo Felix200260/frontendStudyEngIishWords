@@ -1,367 +1,339 @@
 <template>
   <el-container class="layout-container-demo" style="height: 100vh">
-    <el-aside width="200px">
-      <el-scrollbar>
-        <el-menu>
-          <el-sub-menu>
-            <template #title>
-              <el-icon><message /></el-icon>Колоды
-            </template>
+    <el-header style="height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; background-color: #fff; border-bottom: 1px solid #e4e7ed;">
+      <div style="display: flex; align-items: center;">
+        <span style="color: black; font-size: 18px; font-weight: 600;">
+          StudyEnglishWords
+        </span>
+      </div>
 
-            <el-menu-item-group>
-              <el-menu-item
-                v-for="(deck, index) in filteredDecks"
-                :key="deck.id ?? index"
-                :index="String(index)"
-              >
-                {{ deck.title }}
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-sub-menu>
-        </el-menu>
-      </el-scrollbar>
-    </el-aside>
-
-    <el-container>
-      <el-header style="text-align: right; font-size: 12px; height: 50px">
-        <div class="toolbar">
-          <div class="DeckSearch">
-            <el-autocomplete
-              v-model="state"
-              clearable
-              placeholder="Найти колоду"
-              :fetch-suggestions="querySearch"
-              @select="handleSelect"
-            >
-              <template #suffix>
-                <el-icon class="el-input__icon" @click="handleIconClick">
-                  <Edit />
-                </el-icon>
-              </template>
-              <template #default="{ item }">
-                <div>{{ item.value }}</div>
-              </template>
-            </el-autocomplete>
-          </div>
-          <!--Добавить колоду-->
-          <div class="addDeck">
-            <el-button
-              type="primary"
-              :icon="Plus"
-              @click="dialogOpenAddDeck = true"
-              >Добавить колоду</el-button
-            >
-          </div>
-
-          <el-dialog
-            v-model="dialogOpenAddDeck"
-            title="Добавление колоды"
-            width="500"
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <!-- Поиск колоды -->
+        <div class="DeckSearch">
+          <el-autocomplete
+            v-model="state"
+            clearable
+            placeholder="Найти колоду"
+            :fetch-suggestions="querySearch"
+            @select="handleSelect"
+            style="width: 200px;"
           >
-            <el-form :model="form">
-              <el-form-item
-                label="Название колоды"
-                :label-width="formLabelWidth"
-              >
-                <el-input v-model="form.name" autocomplete="off" />
-              </el-form-item>
-              <el-form-item label="Категория" :label-width="formLabelWidth">
-                <div class="m-4">
-                  <el-select
-                    v-model="form.categories"
-                    multiple
-                    placeholder="Выбрать"
-                    style="width: 240px"
-                  >
-                    <el-option
-                      v-for="category in categories"
-                      :key="category.id"
-                      :label="category.title"
-                      :value="category.title"
-                    >
-                      <template #default>
-                        <div
-                          style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                          "
-                        >
-                          <span>{{ category.title }}</span>
-                          <el-button
-                            type="text"
-                            size="small"
-                            @click.stop="confirmDeleteCategory(category)"
-                          >
-                            Удалить
-                          </el-button>
-                        </div>
-                      </template>
-                    </el-option>
-                    <el-button
-                      style="
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        margin: 10px;
-                      "
-                      :label="`Добавить`"
-                      @click="handleCategoryChange('add')"
-                    >
-                      <template #default>
-                        <span style="color: #409eff; font-weight: bold">
-                          <el-icon
-                            style="vertical-align: middle; margin-right: 4px"
-                            ><Plus
-                          /></el-icon>
-                          Добавить
-                        </span>
-                      </template>
-                    </el-button>
-                  </el-select>
-                </div>
-              </el-form-item>
-              <el-form-item label="Описание" :label-width="formLabelWidth">
-                <el-input
-                  v-model="textarea"
-                  style="width: 240px"
-                  :rows="2"
-                  type="textarea"
-                  placeholder="Введите описание"
-                />
-              </el-form-item>
-              <!-- Диалог для добавления новой категории -->
-              <el-dialog
-                v-model="dialogAddCategoryVisible"
-                title="Добавить категорию"
-              >
-                <el-form>
-                  <el-form-item label="Название категории">
-                    <el-input v-model="newCategoryName" />
-                  </el-form-item>
-                </el-form>
-                <template #footer>
-                  <el-button @click="dialogAddCategoryVisible = false"
-                    >Отмена</el-button
-                  >
-                  <el-button type="primary" @click="addCategory"
-                    >Добавить</el-button
-                  >
-                </template>
-              </el-dialog>
-              <!-- Диалог для удаления категории -->
-              <el-dialog
-                v-model="dialogDeleteCategoryVisible"
-                title="Удалить категорию"
-              >
-                <p>
-                  Вы уверены, что хотите удалить категорию "{{
-                    categoryToDelete?.label
-                  }}"?
-                </p>
-                <template #footer>
-                  <el-button @click="dialogDeleteCategoryVisible = false"
-                    >Отмена</el-button
-                  >
-                  <el-button type="danger" @click="deleteCategory"
-                    >Удалить</el-button
-                  >
-                </template>
-              </el-dialog>
-            </el-form>
-
-            <template #footer>
-              <div class="dialog-footer">
-                <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-                <el-button type="primary" @click="addDeck"
-                  >Создать колоду</el-button
-                >
-              </div>
+            <template #suffix>
+              <el-icon class="el-input__icon" @click="handleIconClick">
+                <Edit />
+              </el-icon>
             </template>
-          </el-dialog>
-          <!---->
-          <!----Редактирование колоды-->
-          <el-dialog
-            v-model="dialogOpenEditDeck"
-            title="Редактирование колоды"
-            width="500"
-          >
-            <el-form :model="form">
-              <el-form-item
-                label="Название колоды"
-                :label-width="formLabelWidth"
-              >
-                <el-input v-model="form.name" autocomplete="off" />
-              </el-form-item>
-              <el-form-item label="Категория" :label-width="formLabelWidth">
-                <div class="m-4">
-                  <el-select
-                    v-model="form.categories"
-                    multiple
-                    placeholder="Выбрать"
-                    style="width: 240px"
-                  >
-                    <el-option
-                      v-for="category in categories"
-                      :key="category.id"
-                      :label="category.title"
-                      :value="category.title"
-                    >
-                      <template #default>
-                        <div
-                          style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                          "
-                        >
-                          <span>{{ category.title }}</span>
-                          <el-button
-                            type="text"
-                            size="small"
-                            @click.stop="deleteCategory()"
-                          >
-                            Удалить
-                          </el-button>
-                        </div>
-                      </template>
-                    </el-option>
-                    <!--Добавить-->
-                    <el-button
-                      style="
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        margin: 10px;
-                      "
-                      :label="`Добавить категорию`"
-                      @click="handleCategoryChange('add')"
-                    >
-                      <template #default>
-                        <span style="color: #409eff; font-weight: bold">
-                          <el-icon
-                            style="vertical-align: middle; margin-right: 4px"
-                            ><Plus
-                          /></el-icon>
-                          Добавить категорию
-                        </span>
-                      </template>
-                    </el-button>
-                    <!--Добавить-->
-                    <!--Редактирование-->
-                    <el-button
-                      style="
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        margin: 10px;
-                      "
-                      :label="`Редактирование`"
-                      @click="handleCategoryChange('edit')"
-                    >
-                      <template #default>
-                        <span style="color: #409eff; font-weight: bold">
-                          <el-icon
-                            style="vertical-align: middle; margin-right: 4px"
-                            ><Edit
-                          /></el-icon>
-                          Редактирование категорию
-                        </span>
-                      </template>
-                    </el-button>
-                    <!--Редактирование-->
-                  </el-select>
-                </div>
-              </el-form-item>
-              <el-form-item label="Описание" :label-width="formLabelWidth">
-                <el-input
-                  v-model="textarea"
-                  style="width: 240px"
-                  :rows="2"
-                  type="textarea"
-                  placeholder="Введите описание"
-                />
-              </el-form-item>
-              <!-- Диалог для добавления новой категории -->
-              <el-dialog
-                v-model="dialogAddCategoryVisible"
-                title="Добавить категорию"
-              >
-                <el-form>
-                  <el-form-item label="Название категории">
-                    <el-input v-model="newCategoryName" />
-                  </el-form-item>
-                </el-form>
-                <template #footer>
-                  <el-button @click="dialogAddCategoryVisible = false"
-                    >Отмена</el-button
-                  >
-                  <el-button type="primary" @click="addCategory"
-                    >Добавить</el-button
-                  >
-                </template>
-              </el-dialog>
-              <!-- Диалог для удаления категории -->
-              <el-dialog
-                v-model="dialogDeleteCategoryVisible"
-                title="Удалить категорию"
-              >
-                <p>
-                  Вы уверены, что хотите удалить категорию "{{
-                    categoryToDelete?.label
-                  }}"?
-                </p>
-                <template #footer>
-                  <el-button @click="dialogDeleteCategoryVisible = false"
-                    >Отмена</el-button
-                  >
-                  <el-button type="danger" @click="deleteCategory"
-                    >Удалить</el-button
-                  >
-                </template>
-              </el-dialog>
-            </el-form>
-
-            <template #footer>
-              <div class="dialog-footer">
-                <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-                <el-button type="primary" @click="saveEditedDeck"
-                  >Изменить колоду</el-button
-                >
-              </div>
+            <template #default="{ item }">
+              <div>{{ item.value }}</div>
             </template>
-          </el-dialog>
-          <div class="outputFromSystem">
-            <el-icon
-              style="
-                margin-right: 8px;
-                margin-top: 1px;
-                margin-left: 8px;
-                color: black;
-                cursor: pointer;
-                font-size: 15px;
-              "
-            >
-              <SwitchButton @click="logout" />
-            </el-icon>
-          </div>
-          <div class="profile">
-            <el-icon
-              style="
-                margin-right: 8px;
-                margin-top: 1px;
-                margin-left: 8px;
-                color: black;
-                cursor: pointer;
-                font-size: 15px;
-              "
-            >
-              <UserFilled />
-            </el-icon>
-            <span>{{ userStore.email }}</span>
-          </div>
+          </el-autocomplete>
         </div>
-      </el-header>
+
+        <!-- Добавить колоду -->
+        <el-button
+          type="primary"
+          :icon="Plus"
+          @click="dialogOpenAddDeck = true"
+        >
+          Добавить колоду
+        </el-button>
+
+        <!-- Выход из системы -->
+        <el-icon
+          style="cursor: pointer; font-size: 16px; color: black;"
+          @click="logout"
+        >
+          <SwitchButton />
+        </el-icon>
+
+        <!-- Профиль -->
+        <div style="display: flex; align-items: center; gap: 8px; color: black;">
+          <el-icon>
+            <UserFilled />
+          </el-icon>
+          <span>{{ userStore.email }}</span>
+        </div>
+      </div>
+    </el-header>
+
+    <el-dialog
+      v-model="dialogOpenAddDeck"
+      title="Добавление колоды"
+      width="500"
+    >
+      <el-form :model="form">
+        <el-form-item
+          label="Название колоды"
+          :label-width="formLabelWidth"
+        >
+          <el-input v-model="form.name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="Категория" :label-width="formLabelWidth">
+          <div class="m-4">
+            <el-select
+              v-model="form.categories"
+              multiple
+              placeholder="Выбрать"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="category in categories"
+                :key="category.id"
+                :label="category.title"
+                :value="category.title"
+              >
+                <template #default>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span>{{ category.title }}</span>
+                    <el-button
+                      type="text"
+                      size="small"
+                      @click.stop="confirmDeleteCategory(category)"
+                    >
+                      Удалить
+                    </el-button>
+                  </div>
+                </template>
+              </el-option>
+              <el-button
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 10px;
+                "
+                :label="`Добавить`"
+                @click="handleCategoryChange('add')"
+              >
+                <template #default>
+                  <span style="color: #409eff; font-weight: bold">
+                    <el-icon
+                      style="vertical-align: middle; margin-right: 4px"
+                    ><Plus
+                    /></el-icon>
+                    Добавить
+                  </span>
+                </template>
+              </el-button>
+            </el-select>
+          </div>
+        </el-form-item>
+        <el-form-item label="Описание" :label-width="formLabelWidth">
+          <el-input
+            v-model="textarea"
+            style="width: 240px"
+            :rows="2"
+            type="textarea"
+            placeholder="Введите описание"
+          />
+        </el-form-item>
+        <!-- Диалог для добавления новой категории -->
+        <el-dialog
+          v-model="dialogAddCategoryVisible"
+          title="Добавить категорию"
+        >
+          <el-form>
+            <el-form-item label="Название категории">
+              <el-input v-model="newCategoryName" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <el-button @click="dialogAddCategoryVisible = false"
+            >Отмена</el-button
+            >
+            <el-button type="primary" @click="addCategory"
+            >Добавить</el-button
+            >
+          </template>
+        </el-dialog>
+        <!-- Диалог для удаления категории -->
+        <el-dialog
+          v-model="dialogDeleteCategoryVisible"
+          title="Удалить категорию"
+        >
+          <p>
+            Вы уверены, что хотите удалить категорию "{{
+              categoryToDelete?.label
+            }}"?
+          </p>
+          <template #footer>
+            <el-button @click="dialogDeleteCategoryVisible = false"
+            >Отмена</el-button
+            >
+            <el-button type="danger" @click="deleteCategory"
+            >Удалить</el-button
+            >
+          </template>
+        </el-dialog>
+      </el-form>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
+          <el-button type="primary" @click="addDeck"
+          >Создать колоду</el-button
+          >
+        </div>
+      </template>
+    </el-dialog>
+      <!---->
+      <!----Редактирование колоды-->
+      <el-dialog
+        v-model="dialogOpenEditDeck"
+        title="Редактирование колоды"
+        width="500"
+      >
+        <el-form :model="form">
+          <el-form-item
+            label="Название колоды"
+            :label-width="formLabelWidth"
+          >
+            <el-input v-model="form.name" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="Категория" :label-width="formLabelWidth">
+            <div class="m-4">
+              <el-select
+                v-model="form.categories"
+                multiple
+                placeholder="Выбрать"
+                style="width: 240px"
+              >
+                <el-option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :label="category.title"
+                  :value="category.title"
+                >
+                  <template #default>
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                      "
+                    >
+                      <span>{{ category.title }}</span>
+                      <el-button
+                        type="text"
+                        size="small"
+                        @click.stop="deleteCategory()"
+                      >
+                        Удалить
+                      </el-button>
+                    </div>
+                  </template>
+                </el-option>
+                <!--Добавить-->
+                <el-button
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 10px;
+                  "
+                  :label="`Добавить категорию`"
+                  @click="handleCategoryChange('add')"
+                >
+                  <template #default>
+                    <span style="color: #409eff; font-weight: bold">
+                      <el-icon
+                        style="vertical-align: middle; margin-right: 4px"
+                      ><Plus
+                      /></el-icon>
+                      Добавить категорию
+                    </span>
+                  </template>
+                </el-button>
+                <!--Добавить-->
+                <!--Редактирование-->
+                <el-button
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 10px;
+                  "
+                  :label="`Редактирование`"
+                  @click="handleCategoryChange('edit')"
+                >
+                  <template #default>
+                    <span style="color: #409eff; font-weight: bold">
+                      <el-icon
+                        style="vertical-align: middle; margin-right: 4px"
+                      ><Edit
+                      /></el-icon>
+                      Редактирование категорию
+                    </span>
+                  </template>
+                </el-button>
+                <!--Редактирование-->
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item label="Описание" :label-width="formLabelWidth">
+            <el-input
+              v-model="textarea"
+              style="width: 240px"
+              :rows="2"
+              type="textarea"
+              placeholder="Введите описание"
+            />
+          </el-form-item>
+          <!-- Диалог для добавления новой категории -->
+          <el-dialog
+            v-model="dialogAddCategoryVisible"
+            title="Добавить категорию"
+          >
+            <el-form>
+              <el-form-item label="Название категории">
+                <el-input v-model="newCategoryName" />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <el-button @click="dialogAddCategoryVisible = false"
+              >Отмена</el-button
+              >
+              <el-button type="primary" @click="addCategory"
+              >Добавить</el-button
+              >
+            </template>
+          </el-dialog>
+          <!-- Диалог для удаления категории -->
+          <el-dialog
+            v-model="dialogDeleteCategoryVisible"
+            title="Удалить категорию"
+          >
+            <p>
+              Вы уверены, что хотите удалить категорию "{{
+                categoryToDelete?.label
+              }}"?
+            </p>
+            <template #footer>
+              <el-button @click="dialogDeleteCategoryVisible = false"
+              >Отмена</el-button
+              >
+              <el-button type="danger" @click="deleteCategory"
+              >Удалить</el-button
+              >
+            </template>
+          </el-dialog>
+        </el-form>
+
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
+            <el-button type="primary" @click="saveEditedDeck"
+            >Изменить колоду</el-button
+            >
+          </div>
+        </template>
+      </el-dialog>
 
       <el-scrollbar
         style="height: calc(100vh - 50px)"
@@ -534,7 +506,6 @@
           </el-dialog>
         </el-main>
       </el-scrollbar>
-    </el-container>
   </el-container>
 </template>
 
@@ -911,10 +882,9 @@ const confirmDeleteCategory = (category: { id: number; title: string }) => {
 <style scoped>
 .layout-container-demo .el-header {
   position: relative;
-  background-color: #e9eaec;
+  border-bottom: 2px solid #e9eaec;
   color: white;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   padding: 0 20px;
 }
