@@ -432,8 +432,8 @@
           </template>
           <template v-if="isOpenWindowStudyWords">
             <StudyWords
-              :deck-id="selectedDeckForStudy?.id"
-              :deck-name="selectedDeckForStudy?.name"
+              :deck-id="selectedDeck?.id"
+              :deck-name="selectedDeck?.title"
               :cards="selectedDeckCards"
               @closeWindowStudyWords="handleCloseWindowStudyWords"
             >
@@ -870,6 +870,7 @@ const confirmDeleteCategory = (category: { id: number; title: string }) => {
 
 const isOpenWindowStudyWords = ref(false);
 const handleOpenStudyWindow = () => {
+  selectedDeckForStudy.value = selectedDeck.value;
   isOpenWindowStudyWords.value = true;
 }
 
