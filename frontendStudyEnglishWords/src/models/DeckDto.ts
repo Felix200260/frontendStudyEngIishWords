@@ -1,8 +1,10 @@
+import { CategoriesDto } from '@/models/CategoriesDto';
+
 export class DeckDto {
   userId!: number;
   title!: string;
   description?: string;
-  categoryId?: number[];
+  categories?: CategoriesDto[];
 
   constructor(init?: Partial<DeckDto>) {
     Object.assign(this, init);

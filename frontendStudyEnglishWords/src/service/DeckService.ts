@@ -1,5 +1,5 @@
 import axiosInstance from '@/api/axios';
-import { DeckDto } from '@/models/DescDto';
+import { DeckDto } from '@/models/DeckDto';
 const prefix = '/Deck';
 
 // Получение колод пользователя

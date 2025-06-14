@@ -80,7 +80,7 @@
                 v-for="category in categories"
                 :key="category.id"
                 :label="category.title"
-                :value="category.title"
+                :value="category.id"
               >
                 <template #default>
                   <div
@@ -201,7 +201,7 @@
               <el-select
                 v-model="form.categories"
                 multiple
-                placeholder="Выбрать"
+                placeholder="Выбрать категорию"
                 style="width: 240px"
               >
                 <el-option
@@ -397,21 +397,22 @@
 
                   <template #footer>
                     <div style="display: flex; flex-wrap: wrap">
-                      <div style="margin-right: 5px; margin-top: 5px">
-                        <el-tag type="primary">Tag 1</el-tag>
-                      </div>
-                      <div style="margin-right: 5px; margin-top: 5px">
-                        <el-tag type="success">Tag 2</el-tag>
-                      </div>
-                      <div style="margin-right: 5px; margin-top: 5px">
-                        <el-tag type="info">Tag 3</el-tag>
-                      </div>
-                      <div style="margin-right: 5px; margin-top: 5px">
-                        <el-tag type="warning">Tag 4</el-tag>
-                      </div>
-                      <div style="margin-right: 5px; margin-top: 5px">
-                        <el-tag type="danger">Tag 5</el-tag>
-                      </div>
+                      <template v-if="card.id && deckCategories.get(card.id)?.length">
+                        <div
+                          v-for="(category, index) in deckCategories.get(card.id)"
+                          :key="category.id"
+                          style="margin-right: 5px; margin-top: 5px"
+                        >
+                          <el-tag :type="getTagColor(index)">
+                            {{ category.title }}
+                          </el-tag>
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div style="margin-right: 5px; margin-top: 5px">
+                          <el-tag type="info">Без категории</el-tag>
+                        </div>
+                      </template>
                     </div>
                   </template>
                 </el-card>
@@ -531,7 +532,7 @@ import {
   updateDeck
 } from '@/service/DeckService';
 import type { Deck } from '@/utils/IDeck';
-import { getUserCategories } from '@/service/CategoriesService';
+import { getCategoriesByDeck, getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
 import CreateCards from '@/components/CreateCards.vue';
 import { getCardsByDeckId } from '@/service/CardService';
@@ -629,7 +630,7 @@ const formLabelWidth = '140px';
 
 const form = reactive({
   name: '',
-  categories: [] as string[],
+  categories: [] as number[],
   date1: '',
   date2: '',
   delivery: false,
@@ -681,7 +682,7 @@ const addDeck = async () => {
 
     const newDeck = {
       userId: userStore.id ?? 1, // если нет userStore.id, то 1
-      categories: [form.categories],
+      categories: form.categories,
       title: form.name,
       description: textarea.value,
       createdAt: now
@@ -746,6 +747,7 @@ const loadUserDecks = async () => {
 
     const userDecks = await getUserDecks(userStore.id);
     decks.value = userDecks;
+    await loadAllDeckCategories();
   } catch (error) {
     console.error('Ошибка при загрузке колод:', error);
   }
@@ -803,7 +805,7 @@ const openEditDeck = (deck: Deck) => {
     }
   editingDeckId.value = deck.id;
   form.name = deck.title;
-  form.categories = deck.title;
+  form.categories = deck.categories || [];
   textarea.value = deck.description ?? '';
   dialogOpenEditDeck.value = true;
   showDecksList.value = true;
@@ -877,6 +879,40 @@ const handleOpenStudyWindow = () => {
 const handleCloseWindowStudyWords = () => {
   isOpenWindowStudyWords.value = false;
 }
+
+//Категории================================================================================================================
+const deckCategories = ref<Map<number, CategoriesDto[]>>(new Map());
+
+// 🆕 Функция для загрузки категорий конкретной колоды
+const loadDeckCategories = async (deckId: number) => {
+  try {
+    const categories = await getCategoriesByDeck(deckId);
+    deckCategories.value.set(deckId, categories);
+  } catch (error) {
+    console.error(`Ошибка загрузки категорий для колоды ${deckId}:`, error);
+    deckCategories.value.set(deckId, []); // Пустой массив при ошибке
+  }
+};
+
+// 🆕 Функция для загрузки категорий всех колод
+const loadAllDeckCategories = async () => {
+  for (const deck of decks.value) {
+    if (deck.id) {
+      await loadDeckCategories(deck.id);
+    }
+  }
+};
+
+// 🎨 Массив цветов для тегов
+const tagColors = ['primary', 'success', 'info', 'warning', 'danger'];
+
+// 🎨 Функция для получения цвета тега
+const getTagColor = (index: number) => {
+  return tagColors[index % tagColors.length];
+};
+
+
+//Категории================================================================================================================
 </script>
 
 <style scoped>
