@@ -6,5 +6,6 @@ namespace studyEnglishWordsBackend.Interface
     {
         Task<List<CategoriesDto>> GetCategoriesByDeckIdAsync(int deckId, string userId);
         Task<List<CategoriesDto>> GetAllUserCategoriesAsync(string userId);
+        Task<CategoriesDto> CreateCategoryAsync(string title, string userId);
     }
 }

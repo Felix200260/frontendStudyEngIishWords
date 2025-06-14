@@ -80,7 +80,7 @@
                 v-for="category in categories"
                 :key="category.id"
                 :label="category.title"
-                :value="category.id"
+                :value="category"
               >
                 <template #default>
                   <div
@@ -109,7 +109,7 @@
                   margin: 10px;
                 "
                 :label="`Добавить`"
-                @click="handleCategoryChange('add')"
+                @click="createNewCategory()"
               >
                 <template #default>
                   <span style="color: #409eff; font-weight: bold">
@@ -133,25 +133,6 @@
             placeholder="Введите описание"
           />
         </el-form-item>
-        <!-- Диалог для добавления новой категории -->
-        <el-dialog
-          v-model="dialogAddCategoryVisible"
-          title="Добавить категорию"
-        >
-          <el-form>
-            <el-form-item label="Название категории">
-              <el-input v-model="newCategoryName" />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <el-button @click="dialogAddCategoryVisible = false"
-            >Отмена</el-button
-            >
-            <el-button type="primary" @click="addCategory"
-            >Добавить</el-button
-            >
-          </template>
-        </el-dialog>
         <!-- Диалог для удаления категории -->
         <el-dialog
           v-model="dialogDeleteCategoryVisible"
@@ -201,6 +182,8 @@
               <el-select
                 v-model="form.categories"
                 multiple
+                collapse-tags
+                :max-collapse-tags="1"
                 placeholder="Выбрать категорию"
                 style="width: 240px"
               >
@@ -208,7 +191,7 @@
                   v-for="category in categories"
                   :key="category.id"
                   :label="category.title"
-                  :value="category.title"
+                  :value="category.id"
                 >
                   <template #default>
                     <div
@@ -222,57 +205,56 @@
                       <el-button
                         type="text"
                         size="small"
-                        @click.stop="deleteCategory()"
+                        @click.stop="deleteCategory(category.id)"
                       >
                         Удалить
                       </el-button>
                     </div>
                   </template>
                 </el-option>
-                <!--Добавить-->
-                <el-button
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 10px;
-                  "
-                  :label="`Добавить категорию`"
-                  @click="handleCategoryChange('add')"
-                >
-                  <template #default>
-                    <span style="color: #409eff; font-weight: bold">
-                      <el-icon
-                        style="vertical-align: middle; margin-right: 4px"
-                      ><Plus
-                      /></el-icon>
+                <!--Добавить категорию-->
+
+                <!--                <el-button-->
+                <!--                  style="-->
+                <!--                    display: flex;-->
+                <!--                    justify-content: center;-->
+                <!--                    align-items: center;-->
+                <!--                    margin: 10px;-->
+                <!--                  "-->
+                <!--                  :label="`Добавить категорию`"-->
+                <!--                  @click="handleCategoryChange('add')"-->
+                <!--                >-->
+                <!--                  <template #default>-->
+                <!--                    <span style="color: #409eff; font-weight: bold">-->
+                <!--                      <el-icon-->
+                <!--                        style="vertical-align: middle; margin-right: 4px"-->
+                <!--                      ><Plus-->
+                <!--                      /></el-icon>-->
+                <!--                      Добавить категорию-->
+                <!--                    </span>-->
+                <!--                  </template>-->
+                <!--                </el-button>-->
+
+
+                <template #footer>
+                  <el-button v-if="!isAdding" text bg size="small" @click="onAddCategories">
+                    Вести название новой категории
+                  </el-button>
+                  <template v-else>
+                    <el-input
+                      v-model="categoriesName"
+                      class="option-input"
+                      placeholder="Введите название категории"
+                      size="small"
+                    />
+                    <el-button type="primary" size="small" @click="createNewCategory()">
                       Добавить категорию
-                    </span>
+                    </el-button>
+                    <el-button size="small" @click="clearCategories">Отмена</el-button>
                   </template>
-                </el-button>
-                <!--Добавить-->
-                <!--Редактирование-->
-                <el-button
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 10px;
-                  "
-                  :label="`Редактирование`"
-                  @click="handleCategoryChange('edit')"
-                >
-                  <template #default>
-                    <span style="color: #409eff; font-weight: bold">
-                      <el-icon
-                        style="vertical-align: middle; margin-right: 4px"
-                      ><Edit
-                      /></el-icon>
-                      Редактирование категорию
-                    </span>
-                  </template>
-                </el-button>
-                <!--Редактирование-->
+                </template>
+
+                <!--Добавить категорию-->
               </el-select>
             </div>
           </el-form-item>
@@ -285,25 +267,6 @@
               placeholder="Введите описание"
             />
           </el-form-item>
-          <!-- Диалог для добавления новой категории -->
-          <el-dialog
-            v-model="dialogAddCategoryVisible"
-            title="Добавить категорию"
-          >
-            <el-form>
-              <el-form-item label="Название категории">
-                <el-input v-model="newCategoryName" />
-              </el-form-item>
-            </el-form>
-            <template #footer>
-              <el-button @click="dialogAddCategoryVisible = false"
-              >Отмена</el-button
-              >
-              <el-button type="primary" @click="addCategory"
-              >Добавить</el-button
-              >
-            </template>
-          </el-dialog>
           <!-- Диалог для удаления категории -->
           <el-dialog
             v-model="dialogDeleteCategoryVisible"
@@ -531,8 +494,8 @@ import {
   getUserDecks,
   updateDeck
 } from '@/service/DeckService';
-import type { Deck } from '@/utils/IDeck';
-import { getCategoriesByDeck, getUserCategories } from '@/service/CategoriesService';
+import { DeckDto } from '@/models/DeckDto';
+import { createCategory, getCategoriesByDeck, getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
 import CreateCards from '@/components/CreateCards.vue';
 import { getCardsByDeckId } from '@/service/CardService';
@@ -549,21 +512,33 @@ const navigateToImportCards = () => {
 //Список категорий , тегов и прочее для сортировки колод===========================================
 const categories = ref<CategoriesDto[]>([]);
 //===========================================
-//ологика для обработки выбора категории===========================================
-const dialogAddCategoryVisible = ref(false);
-const newCategoryName = ref('');
+//Логика для обработки выбора категории===========================================
+const categoriesName = ref('')
 
-const handleCategoryChange = (value: string) => {
-  dialogAddCategoryVisible.value = false;
-  if (value === 'add') {
-    dialogAddCategoryVisible.value = true;
+// Функция для создания категории
+const createNewCategory = async () => {
+  if (!categoriesName.value?.trim()) {
+    console.warn('Название категории не может быть пустым');
+    return;
   }
-  if (value === 'edit') {
-    dialogAddCategoryVisible.value = true;
+  try {
+    console.log("categoriesName.value.trim():", categoriesName.value.trim());
+    const newCategory = await createCategory(categoriesName.value.trim());
+
+    // Добавляем в локальный список категорий
+    categories.value.push(newCategory);
+
+    // Очищаем поле и закрываем диалог
+    categoriesName.value = '';
+
+    console.log('✅ Категория создана:', newCategory);
+  } catch (error) {
+    console.error('❌ Ошибка при создании категории:', error);
   }
 };
 
-const handleDeckUpdated = (updatedDeck: Deck) => {
+
+const handleDeckUpdated = (updatedDeck: DeckDto) => {
   // Обновляем колоду в списке
   const index = decks.value.findIndex(deck => deck.id === updatedDeck.id);
   if (index !== -1) {
@@ -575,25 +550,24 @@ const handleDeckUpdated = (updatedDeck: Deck) => {
 
   console.log('🔄 Колода обновлена в MainView');
 };
-
-const addCategory = () => {
-  newCategoryName.value = '';
-  dialogAddCategoryVisible.value = false;
-};
 //===========================================
 //Удаление категорий===========================================
 const dialogDeleteCategoryVisible = ref(false);
 const categoryToDelete = ref<{ label: string; value: string } | null>(null);
 
-const deleteCategory = async () => {
-  if (categoryToDelete.value) {
-    // Здесь должен быть вызов вашего API для удаления категории
-    // const response = await deleteCategoryFromAPI(categoryId);
-    console.log('Удаление категории:', categoryToDelete.value);
-    dialogDeleteCategoryVisible.value = false;
-    categoryToDelete.value = null;
-  }
-};
+  const deleteCategory = async (categoryId: number) => {
+  try {
+    // Здесь будет вызов API для удаления
+    // await deleteCategoryApi(categoryId);
+
+    // Удаляем из локального списка
+    categories.value = categories.value.filter(cat => cat.id !== categoryId);
+
+    console.log('✅ Категория удалена:', categoryId);
+    } catch (error) {
+    console.error('❌ Ошибка при удалении категории:', error);
+    }
+  };
 //===========================================
 
 const dialogOpenAddDeck = ref(false);
@@ -608,9 +582,9 @@ const logout = () => {
 
 const selectedDeckId = ref<number | undefined | null>(null);
 const selectedDeckCards = ref<CardDto[]>([]);
-const selectedDeck = ref<Deck | null>(null);
+const selectedDeck = ref<DeckDto | null>(null);
 
-const handleCardClick = async (deck: Deck) => {
+const handleCardClick = async (deck: DeckDto) => {
   try {
     if (!deck.id) {
         console.error('ID колоды отсутствует');
@@ -630,7 +604,7 @@ const formLabelWidth = '140px';
 
 const form = reactive({
   name: '',
-  categories: [] as number[],
+  categories: [] as CategoriesDto[],
   date1: '',
   date2: '',
   delivery: false,
@@ -675,17 +649,16 @@ const item = {
 const tableData = ref(Array.from({ length: 20 }).fill(item));
 
 //Генерация колод========================================================================================
-const decks = ref<Deck[]>([]);
+const decks = ref<DeckDto[]>([]);
 const addDeck = async () => {
   if (form.name && textarea.value) {
     const now = new Date().toISOString();
 
     const newDeck = {
-      userId: userStore.id ?? 1, // если нет userStore.id, то 1
+      userId: userStore.id ?? 1,
       categories: form.categories,
       title: form.name,
-      description: textarea.value,
-      createdAt: now
+      description: textarea.value
     };
 
     try {
@@ -797,7 +770,7 @@ const loadCardsForStudy = async (deck: any) => {
 };
 //Методы загрузки карточек для изучения========================================================================================
 //Редактирование параметров колоды========================================================================================
-const openEditDeck = (deck: Deck) => {
+const openEditDeck = (deck: DeckDto) => {
   event?.stopPropagation();
   if (!deck.id) {
       console.error('ID колоды отсутствует');
@@ -812,13 +785,12 @@ const openEditDeck = (deck: Deck) => {
 };
 const saveEditedDeck = async () => {
   if (!editingDeckId.value) return;
-  const updatedDeck = {
+  const updatedDeck = new DeckDto({
     userId: userStore.id ?? 1,
     title: form.name,
     categories: form.categories,
     description: textarea.value
-    // другие нужные поля, если есть
-  };
+  });
   const response = await updateDeck(editingDeckId.value, updatedDeck);
   if (response) {
     const idx = decks.value.findIndex(
@@ -881,6 +853,17 @@ const handleCloseWindowStudyWords = () => {
 }
 
 //Категории================================================================================================================
+const isAdding = ref(false)
+
+const onAddCategories = () => {
+  isAdding.value = true
+}
+
+const clearCategories = () => {
+  categoriesName.value = ''
+  isAdding.value = false
+}
+
 const deckCategories = ref<Map<number, CategoriesDto[]>>(new Map());
 
 // 🆕 Функция для загрузки категорий конкретной колоды
@@ -988,5 +971,9 @@ const getTagColor = (index: number) => {
 
 .clickable-card {
   cursor: pointer;
+}
+.option-input {
+  width: 100%;
+  margin-bottom: 8px;
 }
 </style>

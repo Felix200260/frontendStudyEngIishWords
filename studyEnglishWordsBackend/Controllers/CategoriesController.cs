@@ -37,8 +37,29 @@ namespace studyEnglishWordsBackend.Controllers
 
         private string GetCurrentUserId()
         {
-            // Пока заглушка, потом добавишь авторизацию
+            // Пока заглушка
             return "1";
+        }
+        
+        // Создать новую категорию
+        [HttpPost("CreateCategory")]
+        public async Task<ActionResult<CategoriesDto>> CreateCategory([FromBody] string title)
+        {
+            var userId = GetCurrentUserId();
+            
+            try
+            {
+                var newCategory = await _categoriesesService.CreateCategoryAsync(title, userId);
+                return Ok(newCategory);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Ошибка при создании категории" });
+            }
         }
     }
 }

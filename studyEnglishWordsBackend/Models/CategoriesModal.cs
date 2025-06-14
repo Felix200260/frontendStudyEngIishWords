@@ -11,6 +11,11 @@ namespace studyEnglishWordsBackend.Models
         [Column("title")]
         public string? Title { get; set; }
         
+        [Column("user_id")]
+        public string? UserId  { get; set; }
+        
+        
+        
         // Навигационные свойства
         public virtual ICollection<DeckCategoriesModal> DeckCategories { get; set; } = new List<DeckCategoriesModal>();
     }
