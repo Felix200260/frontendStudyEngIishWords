@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using studyEnglishWordsBackend.Service;
+using studyEnglishWordsBackend.Dto;
+using studyEnglishWordsBackend.Interface;
 
 namespace studyEnglishWordsBackend.Controllers
 {
@@ -7,32 +8,37 @@ namespace studyEnglishWordsBackend.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly CategoriesService _categoriesService;
+        private readonly ICategoriesService _categoriesesService;
 
-        public CategoriesController(CategoriesService categoriesService)
+        public CategoriesController(ICategoriesService categoriesesService)
         {
-            _categoriesService = categoriesService;
+            _categoriesesService = categoriesesService;
         }
 
-        // GET api/categories?userId=1
-        [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] int userId)
+        // Получить категории для определённой колоды
+        [HttpGet("GetCategoriesByDeck/{deckId}")]
+        public async Task<ActionResult<List<CategoriesDto>>> GetCategoriesByDeck(int deckId)
         {
-            if (userId == null)
-                return BadRequest("Некорректный userId");
-
-            var categories = await _categoriesService.GetCategoriesByUserIdAsync(userId);
+            var userId = GetCurrentUserId(); 
+            
+            var categories = await _categoriesesService.GetCategoriesByDeckIdAsync(deckId, userId);
             return Ok(categories);
         }
-        
-        [HttpGet]
-        public async Task<IActionResult> DeleteCategories([FromQuery] int categoriesId)
-        {
-            if (categoriesId == null)
-                return BadRequest("Некорректный categoriesId");
 
-            var categories = await _categoriesService.GetCategoriesByUserIdAsync(categoriesId);
+        // Получить все категории пользователя
+        [HttpGet("GetAllUserCategories")]
+        public async Task<ActionResult<List<CategoriesDto>>> GetAllUserCategories()
+        {
+            var userId = GetCurrentUserId();
+            
+            var categories = await _categoriesesService.GetAllUserCategoriesAsync(userId);
             return Ok(categories);
+        }
+
+        private string GetCurrentUserId()
+        {
+            // Пока заглушка, потом добавишь авторизацию
+            return "1";
         }
     }
 }

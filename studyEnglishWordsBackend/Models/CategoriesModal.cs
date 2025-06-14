@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace studyEnglishWordsBackend.Models
 {
     [Table("categories")]
-    public class Categories
+    public class CategoriesModal
     {
         [Column("id")]
         public int? Id { get; set; }
@@ -11,7 +11,7 @@ namespace studyEnglishWordsBackend.Models
         [Column("title")]
         public string? Title { get; set; }
         
-        [Column("user_id")]
-        public int? UserId { get; set; }
+        // Навигационные свойства
+        public virtual ICollection<DeckCategoriesModal> DeckCategories { get; set; } = new List<DeckCategoriesModal>();
     }
 }

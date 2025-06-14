@@ -5,9 +5,9 @@ namespace studyEnglishWordsBackend.Service
 {
     public interface ICardsService
     {
-        Task<List<Card>> GetCardsByDeckIdAsync(int deckId);
-        Task<Card> AddCardAsync(string englishWord, string russianWord, int deckId);
-        Task<Card> UpdateCardAsync(int cardId, string englishWord, string russianWord, int deckId);
+        Task<List<CardModal>> GetCardsByDeckIdAsync(int deckId);
+        Task<CardModal> AddCardAsync(string englishWord, string russianWord, int deckId);
+        Task<CardModal> UpdateCardAsync(int cardId, string englishWord, string russianWord, int deckId);
         Task DeleteCardAsync(int cardId);
     }
 
@@ -20,7 +20,7 @@ namespace studyEnglishWordsBackend.Service
             _context = context;
         }
 
-        public async Task<List<Card>> GetCardsByDeckIdAsync(int deckId)
+        public async Task<List<CardModal>> GetCardsByDeckIdAsync(int deckId)
         {
             try
             {
@@ -40,9 +40,9 @@ namespace studyEnglishWordsBackend.Service
             }
         }
 
-        public async Task<Card> AddCardAsync(string englishWord, string russianWord, int deckId)
+        public async Task<CardModal> AddCardAsync(string englishWord, string russianWord, int deckId)
         {
-            var card = new Card
+            var card = new CardModal
             {
                 EnglishWord = englishWord,
                 RussianWord = russianWord,
@@ -59,7 +59,7 @@ namespace studyEnglishWordsBackend.Service
             return card;
         }
 
-        public async Task<Card> UpdateCardAsync(int cardId, string englishWord, string russianWord, int deckId)
+        public async Task<CardModal> UpdateCardAsync(int cardId, string englishWord, string russianWord, int deckId)
         {
             var card = await _context.Cards.FindAsync(cardId);
             if (card == null)

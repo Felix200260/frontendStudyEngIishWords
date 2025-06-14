@@ -629,7 +629,7 @@ const formLabelWidth = '140px';
 
 const form = reactive({
   name: '',
-  categories: '',
+  categories: [] as string[],
   date1: '',
   date2: '',
   delivery: false,
@@ -657,7 +657,7 @@ const handleIconClick = (ev: Event) => {
 
 onMounted(async () => {
   const userId = 1;
-  categories.value = await getUserCategories(userId);
+  categories.value = await getUserCategories();
 });
 //Поиск====================================================================================
 

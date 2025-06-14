@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using studyEnglishWordsBackend.Models;
+using studyEnglishWordsBackend.Dto;
+using studyEnglishWordsBackend.Interface;
 
 namespace studyEnglishWordsBackend.Service
 {
-    public class CategoriesService
+    public class CategoriesService : ICategoriesService
     {
         private readonly AppDbContext _context;
 
@@ -12,22 +13,34 @@ namespace studyEnglishWordsBackend.Service
             _context = context;
         }
 
-        // Получение всех категорий пользователя
-        public async Task<List<Categories>> GetCategoriesByUserIdAsync(int userId)
+        public async Task<List<CategoriesDto>> GetCategoriesByDeckIdAsync(int deckId, string userId)
         {
-            // Пример для EF Core
-            return await _context.Categories
-                .Where(c => c.UserId == userId)
+            var categories = await _context.DeckCategories
+                .Where(dc => dc.DeckId == deckId)
+                .Include(dc => dc.Category)
+                .Select(dc => new CategoriesDto
+                {
+                    Id = dc.Category.Id ?? 0,
+                    Title = dc.Category.Title ?? ""
+                })
                 .ToListAsync();
+
+            return categories;
         }
-        //Удаление категорий
-        public async Task<List<Categories>> DeleteCategoriesByUserIdAsync(int userId)
+
+
+        public async Task<List<CategoriesDto>> GetAllUserCategoriesAsync(string userId)
         {
-            // Пример для EF Core
-            return await _context.Categories
-                .Where(c => c.UserId == userId)
+            var categories = await _context.Categories
+                .Select(c => new CategoriesDto
+                {
+                    Id = c.Id ?? 0,
+                    Title = c.Title ?? ""
+                })
                 .ToListAsync();
+
+            return categories;
         }
+
     }
 }
-
