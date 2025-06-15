@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace studyEnglishWordsBackend.Models
 {
     [Table("categories")]
-    public class CategoriesModal
+    public class Categories
     {
         [Column("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [Column("title")]
         public string? Title { get; set; }

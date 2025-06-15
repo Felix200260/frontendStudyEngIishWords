@@ -18,11 +18,11 @@ namespace studyEnglishWordsBackend.Service
         {
             var categories = await _context.DeckCategories
                 .Where(dc => dc.DeckId == deckId)
-                .Include(dc => dc.Category)
+                .Include(dc => dc.Categories)
                 .Select(dc => new CategoriesDto
                 {
-                    Id = dc.Category.Id ?? 0,
-                    Title = dc.Category.Title ?? ""
+                    Id = dc.Categories!.Id,
+                    Title = dc.Categories.Title ?? ""
                 })
                 .ToListAsync();
 
@@ -36,7 +36,7 @@ namespace studyEnglishWordsBackend.Service
                 .Where(c => c.UserId == userId)
                 .Select(c => new CategoriesDto
                 {
-                    Id = c.Id ?? 0,
+                    Id = c.Id,
                     Title = c.Title ?? ""
                 })
                 .ToListAsync();
@@ -55,7 +55,7 @@ namespace studyEnglishWordsBackend.Service
                 throw new InvalidOperationException($"Категория '{title}' уже существует у данного пользователя");
             }
     
-            var newCategory = new CategoriesModal()
+            var newCategory = new Categories()
             {
                 Title = title,
                 UserId = userId
@@ -66,7 +66,7 @@ namespace studyEnglishWordsBackend.Service
         
             return new CategoriesDto
             {
-                Id = newCategory.Id ?? 0,
+                Id = newCategory!.Id,
                 Title = newCategory.Title ?? ""
             };
         }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace studyEnglishWordsBackend.Models
 {
@@ -11,14 +12,15 @@ namespace studyEnglishWordsBackend.Models
         [Column("deck_id")]
         public int DeckId { get; set; }
 
-        [Column("category_id")]
-        public int CategoryId { get; set; }
+        [Column("categories_id")]
+        public int CategoriesId { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
         // Навигационные св-ва
-        public DeckModal Deck { get; set; }
-        public CategoriesModal Category { get; set; }
+        public DeckModal? Deck { get; set; }
+        
+        public Categories? Categories { get; set; }
     }
 }

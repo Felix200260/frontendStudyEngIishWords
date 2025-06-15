@@ -291,7 +291,7 @@
         <template #footer>
           <div class="dialog-footer">
             <el-button @click="dialogOpenAddDeck = false">Cancel</el-button>
-            <el-button type="primary" @click="saveEditedDeck"
+            <el-button type="primary" @click="saveEditedDeck(editingDeckId)"
             >Изменить колоду</el-button
             >
           </div>
@@ -502,6 +502,8 @@ import { getCardsByDeckId } from '@/service/CardService';
 import { CardDto } from '@/models/CardDto';
 import { ElMessage } from 'element-plus';
 import StudyWords from '@/components/StudyWords.vue';
+import { UpdateDeckDto } from '@/models/UpdateDeckDto';
+import { CreateDeckDto } from '@/models/CreateDeckDto';
 
 const router = useRouter();
 
@@ -513,11 +515,11 @@ const navigateToImportCards = () => {
 const categories = ref<CategoriesDto[]>([]);
 //===========================================
 //Логика для обработки выбора категории===========================================
-const categoriesName = ref('')
+const categoriesName = ref<string>('')
 
 // Функция для создания категории
 const createNewCategory = async () => {
-  if (!categoriesName.value?.trim()) {
+  if (!categoriesName.value || !categoriesName.value.trim()) {
     console.warn('Название категории не может быть пустым');
     return;
   }
@@ -652,14 +654,16 @@ const tableData = ref(Array.from({ length: 20 }).fill(item));
 const decks = ref<DeckDto[]>([]);
 const addDeck = async () => {
   if (form.name && textarea.value) {
-    const now = new Date().toISOString();
-
-    const newDeck = {
+    // 🆕 Извлекаем только ID категорий
+    const categoryIds = form.categories.map(cat =>
+      typeof cat === 'object' ? cat.id : cat
+    );
+    const newDeck = new CreateDeckDto({
       userId: userStore.id ?? 1,
-      categories: form.categories,
+      categories: categoryIds,
       title: form.name,
       description: textarea.value
-    };
+    });
 
     try {
       const response = await addDeckToDB(newDeck);
@@ -783,25 +787,21 @@ const openEditDeck = (deck: DeckDto) => {
   dialogOpenEditDeck.value = true;
   showDecksList.value = true;
 };
-const saveEditedDeck = async () => {
-  if (!editingDeckId.value) return;
+const saveEditedDeck = async (editingDeckId: number | null) => {
+  if (!editingDeckId) return;
   const updatedDeck = new DeckDto({
     userId: userStore.id ?? 1,
     title: form.name,
     categories: form.categories,
     description: textarea.value
   });
-  const response = await updateDeck(editingDeckId.value, updatedDeck);
+  const response = await updateDeck(editingDeckId, updatedDeck);
   if (response) {
-    const idx = decks.value.findIndex(
-      (deck) => deck.id === editingDeckId.value
-    );
-    if (idx !== -1) {
-      decks.value[idx] = { ...decks.value[idx], ...updatedDeck };
-    }
+    await loadUserDecks(); // вот эта строка обновит весь список и категории
     dialogOpenEditDeck.value = false;
   }
 };
+
 //Редактирование параметров колоды========================================================================================
 const showDecksList = ref(true);
 //================================================================================================================ПОиск колоды
