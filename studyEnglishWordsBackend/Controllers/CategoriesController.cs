@@ -61,5 +61,26 @@ namespace studyEnglishWordsBackend.Controllers
                 return StatusCode(500, new { message = "Ошибка при создании категории" });
             }
         }
+        
+        // Удалить категорию по id
+        [HttpDelete("DeleteCategory/{id}")]
+        public async Task<ActionResult<CategoriesDto>> DeleteCategory(int id)
+        {
+            var userId = GetCurrentUserId();
+            try
+            {
+                var deletedCategory = await _categoriesesService.DeleteCategoryAsync(id, userId);
+                return Ok(deletedCategory);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Ошибка при удалении категории" });
+            }
+        }
+
     }
 }

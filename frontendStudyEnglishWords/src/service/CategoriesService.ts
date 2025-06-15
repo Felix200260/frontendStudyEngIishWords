@@ -21,3 +21,8 @@ export const createCategory = async (title: string): Promise<CategoriesDto> => {
   });
   return data;
 };
+
+//  Удаление категории
+export const deleteCategory = async (id: number): Promise<CategoriesDto> => {
+  await axiosInstance.delete<CategoriesDto>(`${prefix}/DeleteCategory/${id}`);
+};

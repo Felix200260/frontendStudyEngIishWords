@@ -147,7 +147,7 @@
             <el-button @click="dialogDeleteCategoryVisible = false"
             >Отмена</el-button
             >
-            <el-button type="danger" @click="deleteCategory"
+            <el-button type="danger" @click="handleDeleteCategory"
             >Удалить</el-button
             >
           </template>
@@ -205,7 +205,7 @@
                       <el-button
                         type="text"
                         size="small"
-                        @click.stop="deleteCategory(category.id)"
+                        @click.stop="handleDeleteCategory(category.id)"
                       >
                         Удалить
                       </el-button>
@@ -281,7 +281,7 @@
               <el-button @click="dialogDeleteCategoryVisible = false"
               >Отмена</el-button
               >
-              <el-button type="danger" @click="deleteCategory"
+              <el-button type="danger" @click="handleDeleteCategory"
               >Удалить</el-button
               >
             </template>
@@ -495,7 +495,7 @@ import {
   updateDeck
 } from '@/service/DeckService';
 import { DeckDto } from '@/models/DeckDto';
-import { createCategory, getCategoriesByDeck, getUserCategories } from '@/service/CategoriesService';
+import { createCategory, deleteCategory, getCategoriesByDeck, getUserCategories } from '@/service/CategoriesService';
 import { CategoriesDto } from '@/models/CategoriesDto';
 import CreateCards from '@/components/CreateCards.vue';
 import { getCardsByDeckId } from '@/service/CardService';
@@ -557,19 +557,18 @@ const handleDeckUpdated = (updatedDeck: DeckDto) => {
 const dialogDeleteCategoryVisible = ref(false);
 const categoryToDelete = ref<{ label: string; value: string } | null>(null);
 
-  const deleteCategory = async (categoryId: number) => {
-  try {
-    // Здесь будет вызов API для удаления
-    // await deleteCategoryApi(categoryId);
+const handleDeleteCategory = async (categoryId: number) => {
+try {
+  await deleteCategory(categoryId);
 
-    // Удаляем из локального списка
-    categories.value = categories.value.filter(cat => cat.id !== categoryId);
+  // Удаляем из локального списка
+  categories.value = categories.value.filter(cat => cat.id !== categoryId);
 
-    console.log('✅ Категория удалена:', categoryId);
-    } catch (error) {
-    console.error('❌ Ошибка при удалении категории:', error);
-    }
-  };
+  console.log('✅ Категория удалена:', categoryId);
+  } catch (error) {
+  console.error('❌ Ошибка при удалении категории:', error);
+  }
+};
 //===========================================
 
 const dialogOpenAddDeck = ref(false);
